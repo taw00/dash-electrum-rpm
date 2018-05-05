@@ -208,11 +208,8 @@ The Dash Crytocurrency is a revolutionary digital money system. Instant,
 private, and secure.
 
 %prep
+# an rpm creation step (right prior to %%build step)
 # Prep section starts us in directory .../BUILD -or- {_builddir}
-# CREATING RPM:
-# - prep step (comes before build)
-# - This step extracts all code archives and takes any preparatory steps
-#   necessary prior to the build.
 # 
 # References (the docs for this universally suck):
 # * http://ftp.rpm.org/max-rpm/s1-rpm-inside-macros.html
@@ -248,11 +245,8 @@ cd .. ; /usr/bin/tree -df -L 1 %{srcroot} ; cd -
 
 
 %build
+# an rpm creation step (right prior to %%install step)
 # This section starts us in directory {_builddir}/{srcroot}
-# CREATING RPM:
-# - build step (comes before install step)
-# - This step performs any action that takes the code and turns it into a
-#   runnable form. Usually by compiling.
 
 ## Man Pages - not used as of yet
 #gzip %%{buildroot}%%{_mandir}/man1/*.1
@@ -284,13 +278,9 @@ cd ..
 
 
 %install
+# an rpm creation step (right prior to %%files step)
 # This section starts us in directory {_builddir}/{srcroot}
-# CREATING RPM:
-# - install step (comes before files step)
-# - This step moves anything needing to be part of the package into the
-#   {buildroot}, therefore mirroring the final directory and file structure of
-#   an installed RPM.
-
+#
 # Cheatsheet for built-in RPM macros:
 #   _bindir = /usr/bin
 #   _sbindir = /usr/sbin
@@ -353,15 +343,9 @@ cp -a %{srccontribtree}/trezor* %{buildroot}%{_site_packages}/
 
 
 %files
+# an rpm creation step
 # This section starts us in directory {_buildrootdir}
 # (note, macros like %%docs, etc may locate in {_builddir}
-# CREATING RPM:
-# - files step (final step)
-# - This step makes a declaration of ownership of any listed directories
-#   or files
-# - The install step should have set permissions and ownership correctly,
-#   but of final tweaking is often done in this section
-# 
 %defattr(-,root,root,-)
 %license %{srccodetree}/LICENSE
 
@@ -386,27 +370,20 @@ cp -a %{srccontribtree}/trezor* %{buildroot}%{_site_packages}/
 
 
 %pre
-# This section starts us in directory {_builddir}/{srcroot}
-# INSTALLING THE RPM:
-# - pre section (runs before the install process)
-# - system users are added if needed. Any other roadbuilding.
-# 
+# an installation step (runs right prior to installation)
 
 %post
-# This section starts us in directory {_builddir}/{srcroot}
-# INSTALLING THE RPM:
-# - post section (runs after the install process is complete)
-# 
-
+# an installation step (runs after install process is complete)
+/usr/bin/update-desktop-database &> /dev/null || :
 
 %postun
-# This section starts us in directory {_builddir}/{srcroot}
-# UNINSTALLING THE RPM:
-# - postun section (runs after an RPM has been removed)
-# 
-
+# an uninstallation step (runs after uninstall process is complete)
+/usr/bin/update-desktop-database &> /dev/null || :
 
 
 %changelog
+* Fri May 4 2018 Todd Warner <t0dd@protonmail.com> 2.9.4-0.2.testing.taw[n]
+- Update the desktop database upon post installation or uninstallation
+
 * Fri May 4 2018 Todd Warner <t0dd@protonmail.com> 2.9.4-0.1.testing.taw[n]
 - Initial test build.
