@@ -276,8 +276,8 @@ cd ..
   # https://docs.python.org/3/install/index.html#alternate-installation
   /usr/bin/python setup.py install --user
   
-  #/usr/bin/pyrcc4 icons.qrc -o gui/qt/icons_rc.py
-  #/usr/bin/protoc --proto_path=lib/ --python_out=lib/ lib/paymentrequest.proto
+  /usr/bin/pyrcc4 icons.qrc -o gui/qt/icons_rc.py
+  /usr/bin/protoc --proto_path=lib/ --python_out=lib/ lib/paymentrequest.proto
   #./contrib/make_locale
   #./contrib/make_packages
 %endif
