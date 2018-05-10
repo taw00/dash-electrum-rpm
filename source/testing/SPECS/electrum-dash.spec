@@ -55,7 +55,7 @@ Version: %{vermajor}.%{verminor}
 %define snapinfo_rp rp
 
 # if includeMinorbump
-%define minorbump taw0
+%define minorbump taw1
 
 # Building the release string (don't edit this)...
 
@@ -222,7 +222,7 @@ private, and secure.
 #      \_srccodetree2       \_{name2}-{version}
 #      \_srccontribtree     \_{name}-{vermajor}-contrib
 
-mkdir %{srcroot}
+mkdir -p %{srcroot}
 # sourcecode
 %setup -q -T -D -a 0 -n %{srcroot}
 # contrib
@@ -382,8 +382,13 @@ cp -a %{srccontribtree}/trezor* %{buildroot}%{_site_packages}/
 
 
 %changelog
-* Fri May 4 2018 Todd Warner <t0dd@protonmail.com> 2.9.4-0.2.testing.taw[n]
-- Update the desktop database upon post installation or uninstallation
+* May May 10 2018 Todd Warner <t0dd@protonmail.com> 2.9.4-0.1.testing.taw1
+- spec file change: mkdir -p instead of just mkdir, otherwise repeated  
+  rpmbuilds without full cleanup will explode.
+
+* Fri May 4 2018 Todd Warner <t0dd@protonmail.com> 2.9.4-0.1.testing.taw0
+- spec file change: update the desktop database upon post installation or  
+  uninstallation
 
 * Fri May 4 2018 Todd Warner <t0dd@protonmail.com> 2.9.4-0.1.testing.taw[n]
 - Initial test build.
