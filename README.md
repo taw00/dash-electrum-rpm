@@ -1,7 +1,7 @@
 # Dash Electrum
 The Dash Electrum Lightweight Crypocurrency Desktop Wallet for Fedora Linux
 
-> **DON'T USE THIS FOR SERIOUS MONEY** -issues below.  
+> **DON'T USE THIS FOR SERIOUS MONEY**
 > Please understand that this software package is still being tested. Let me know if you
 run into any issues please.
 
@@ -21,11 +21,13 @@ For feedback or comment: <t0dd@protonmail.com>
 
 ---
 
-## Known issues:
+## Known issues (still only building test packages):
 
 You can send and receive funds, but...
 
-* Segfaults on QR Code click on send
-* ```"sni-qt/14318" WARN  20:57:02.778 void StatusNotifierItemFactory::connectToSnw() Invalid interface to SNW_SERVICE```
-* Never seems to mark something as "confirmed". Not sure if this is related to the above.
+* Segfaults on Send > QR Code **--FIXED (though doesn't work with my camera)**
+* ```"sni-qt/14318" WARN  20:57:02.778 void StatusNotifierItemFactory::connectToSnw() Invalid interface to SNW_SERVICE``` **--FIXED**
+* Never seems to mark something as "confirmed". (still investigating)
 * Default directory has permissions 755. Really should be 750. But the wallet is encrypted so... meh.
+* Default directory is ~/.electrum-dash. Should really be ~/.config/electrum-dash -- I may address this. We'll see.
+
