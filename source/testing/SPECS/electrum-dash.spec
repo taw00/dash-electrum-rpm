@@ -374,7 +374,7 @@ install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.svg         %
 
 # electrum-dash.desktop
 desktop-file-install --dir=%{buildroot}%{_datadir}/applications/ %{srccontribtree}/desktop/%{name}.desktop
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 # electrum-dash.appdata.xml
 install -D -m644 -p %{srccontribtree}/desktop/%{name}.appdata.xml %{buildroot}%{_metainfodir}/%{name}.appdata.xml
