@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This metadata copyright 2018 Todd Warner <t0dd at protonmail.com> -->
+<!-- https://fedoraproject.org/wiki/Packaging:AppData -->
+<component type="desktop-application">
+  <id>electrum-dash</id>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Dash Electrum Wallet</name>
+  <summary>An easy-to-use Dash cryptocurrency light client for the desktop</summary>
+
+  <description>
+    <p>Dash Electrum is a fully featured cryptocurrency light wallet for the desktop.
+The Dash Crytocurrency is a revolutionary digital money system. Instant,
+private, and secure.</p>
+  </description>
+
+  <launchable type="desktop-id">electrum-dash.desktop</launchable>
+
+<!--
+  <screenshots>
+    <screenshot type="default">
+      <caption>Dashboard</caption>
+      <image>https://raw.githubusercontent.com/Bertrand256/dash-masternode-tool/master/doc/img/dmt-main-window.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Configuration</caption>
+      <image>https://raw.githubusercontent.com/Bertrand256/dash-masternode-tool/master/doc/img/dmt-config-dlg-misc.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Funds Transfer</caption>
+      <image>https://raw.githubusercontent.com/Bertrand256/dash-masternode-tool/master/doc/img/dmt-transfer-funds.png</image>
+    </screenshot>
+  </screenshots>
+-->
+  <url type="homepage">https://github.com/taw00/electrum-dash-rpm</url>
+  <project_group>Dash Project</project_group>
+
+  <provides>
+    <binary>electrum-dash</binary>
+  </provides>
+
+  <releases>
+    <release version="2.9.4" date="2018-05-03">
+      <description>
+        <p>Summary changelog ...coming?</p>
+      </description>
+    </release>
+  </releases>
+</component>

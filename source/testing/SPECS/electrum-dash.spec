@@ -32,8 +32,8 @@ Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 
 # VERSION
 # eg. 1.0.1
-%define vermajor 2.9
-%define verminor 4
+%define vermajor 3.0
+%define verminor 6
 Version: %{vermajor}.%{verminor}
 
 
@@ -43,7 +43,7 @@ Version: %{vermajor}.%{verminor}
 %define pkgrel_prod 1
 
 # If pre-production - "targetIsProduction 0"
-# eg. 0.6.testing -- pkgrel_preprod should always = pkgrel_prod-1
+# eg. 0.6.testing -- pkgrel_preprod should always equal pkgrel_prod-1
 %define pkgrel_preprod 0
 %define extraver_preprod 1
 %define snapinfo testing
@@ -132,34 +132,46 @@ Release: %{_release}
 # https://fedoraproject.org/wiki/Packaging:SourceURL
 Source0: %{name}-%{version}.tar.gz
 Source1: %{name}-%{vermajor}-contrib.tar.gz
+%if %{sourceIsPrebuilt}
 Source10: %{name2}-%{version}.tar.gz
+%endif
 
-# Geez, need to get this to python3 and qt5
-Requires: python2
-Requires: python-qt4
-Requires: python2-jsonrpclib python2-pbkdf2 python2-protobuf
-Requires: python-qrcode python2-ecdsa python2-pyaes python2-dns
-Requires: python2-requests python2-six
-# ARGH! Fedora 28 doesn't provide python2-trezor
-#Requires: python2-trezor 
+Requires: python3 python3-qt5
+Requires: python3-jsonrpclib python3-pbkdf2 python3-protobuf
+Requires: python3-qrcode python3-ecdsa python3-pyaes python3-dns
+Requires: python3-requests python3-six python3-mnemonic python3-hidapi
+Requires: python3-trezor python3-libusb1
 
-BuildRequires: tree
+# Turn off the brp-python-bytecompile automagic (RPM's auto-bytecompile)
+# https://fedoraproject.org/wiki/Changes/No_more_automagic_Python_bytecompilation
+#%%?disable_automagic_pybytecompile
+# That didn't work. Trying option two...
+# https://fedoraproject.org/wiki/Packaging:Python_Appendix#Manual_byte_compilation
+%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
+
+# Force Python3 as __python default even if Python2 is present (and it usually is).
+# Note, this is going away as an advised path.
+%global __python %{__python3}
+
 # So I can introspect the mock build environment...
+BuildRequires: tree
 #BuildRequires: tree vim-enhanced less
+
 # Required for desktop applications (validation of .desktop and .xml files)
 BuildRequires: desktop-file-utils libappstream-glib
-# For python, pyrcc4, protoc
-BuildRequires: python2
-BuildRequires: python2-devel PyQt4-devel protobuf-compiler
-# For pycurl, gettext, libusb.h, libudev.so
-BuildRequires: python2-pycurl gettext libusb-devel systemd-devel
-BuildRequires: python2-jsonrpclib python2-pbkdf2 python2-protobuf
-BuildRequires: python-qrcode python2-ecdsa python2-pyaes python2-dns
-BuildRequires: python2-requests python2-six
-# ARGH! Fedora 28 doesn't provide python2-trezor
-#BuildRequires: python2-trezor 
+
 # may not need git
 BuildRequires: git
+
+# For pyrcc5 (python3-qt5), protoc (protobuf-compiler)
+BuildRequires: python3 python3-devel protobuf-compiler
+BuildRequires: python3-qt5 python3-qt5-devel
+# For pycurl, gettext, libusb.h, libudev.so
+BuildRequires: python3-pycurl gettext libusb-devel systemd-devel
+BuildRequires: python3-jsonrpclib python3-pbkdf2 python3-protobuf
+BuildRequires: python3-qrcode python3-ecdsa python3-pyaes python3-dns
+BuildRequires: python3-requests python3-six python3-mnemonic python3-hidapi
+BuildRequires: python3-trezor python3-libusb1
 
 
 # CentOS/RHEL/EPEL can't do "Suggests:"
@@ -228,17 +240,24 @@ mkdir -p %{srcroot}
 # contrib
 %setup -q -T -D -a 1 -n %{srcroot}
 # sourcecode
+%if %{sourceIsPrebuilt}
 %setup -q -T -D -a 10 -n %{srcroot}
+%endif
 
 # Libraries ldconfig file - we create it, because lib or lib64
 #echo "%%{_libdir}/%%{name}" > %%{srccontribtree}/etc-ld.so.conf.d_%%{name}.conf
 
 # misspelled filename
 mv %{srccodetree}/LICENCE %{srccodetree}/LICENSE
+%if %{sourceIsPrebuilt}
 mv %{srccodetree2}/LICENCE %{srccodetree2}/LICENSE
-# to quiet a syntax error
-cp %{srccontribtree}/srcroot/lib_paymentrequest.proto %{srccodetree}/lib/paymentrequest.proto
-cp %{srccontribtree}/srcroot/lib_paymentrequest.proto %{srccodetree2}/lib/paymentrequest.proto
+%endif
+## to quiet a syntax error
+## XXX holdover from v2.9.4 - going away
+#cp %%{srccontribtree}/srcroot/lib_paymentrequest.proto %%{srccodetree}/lib/paymentrequest.proto
+#%if %{sourceIsPrebuilt}
+#cp %%{srccontribtree}/srcroot/lib_paymentrequest.proto %%{srccodetree2}/lib/paymentrequest.proto
+#%endif
 
 # For debugging purposes...
 cd .. ; /usr/bin/tree -df -L 1 %{srcroot} ; cd -
@@ -252,10 +271,10 @@ cd .. ; /usr/bin/tree -df -L 1 %{srcroot} ; cd -
 #gzip %%{buildroot}%%{_mandir}/man1/*.1
 
 cd %{srccontribtree}
-/usr/bin/pip install x11-hash-1.4.zip --user
-/usr/bin/pip install x11-hash-1.4.zip -t ./
-/usr/bin/pip install trezor-0.9.0.tar.gz --user
-/usr/bin/pip install trezor-0.9.0.tar.gz -t ./
+#/usr/bin/pip install x11-hash-1.4.zip --user
+#/usr/bin/pip install x11-hash-1.4.zip -t ./
+#/usr/bin/pip install trezor-0.9.0.tar.gz --user
+#/usr/bin/pip install trezor-0.9.0.tar.gz -t ./
 cd ..
 
 %if %{sourceIsPrebuilt}
@@ -265,12 +284,12 @@ cd ..
 %else
   # I've had issues getting this to build still solidifying
   cd %{srccodetree}
-  # we don't have root access to /usr/lib/python2.7/site-packages/
+  # we don't have root access to /usr/lib/python2.7/site-packages/ (or python3.6)
   # Need to build everything locally
   # https://docs.python.org/3/install/index.html#alternate-installation
-  /usr/bin/python setup.py install --user
+  %__python3 setup.py install --user
   
-  /usr/bin/pyrcc4 icons.qrc -o gui/qt/icons_rc.py
+  /usr/bin/pyrcc5 icons.qrc -o gui/qt/icons_rc.py
   /usr/bin/protoc --proto_path=lib/ --python_out=lib/ lib/paymentrequest.proto
   #./contrib/make_locale
   #./contrib/make_packages
@@ -282,6 +301,8 @@ cd ..
 # This section starts us in directory {_builddir}/{srcroot}
 #
 # Cheatsheet for built-in RPM macros:
+#   _builddir = /.../BUILD
+#   buildroot = /.../BUILDROOT
 #   _bindir = /usr/bin
 #   _sbindir = /usr/sbin
 #   _datadir = /usr/share
@@ -298,8 +319,6 @@ cd ..
 %define _metainfodir %{_datadir}/metainfo
 
 # Create directories
-# /usr/[lib,lib64]/electrum-dash/
-#install -d %%{buildroot}%%{_libdir}/%%{name}
 # /usr/bin/ and /usr/sbin/
 install -d -m755 -p %{buildroot}%{_bindir}
 install -d -m755 -p %{buildroot}%{_sbindir}
@@ -307,18 +326,24 @@ install -d -m755 -p %{buildroot}%{_sbindir}
 install -d %{buildroot}%{_datadir}/applications
 # /etc/ld.so.conf.d/
 install -d %{buildroot}%{_sysconfdir}/ld.so.conf.d
+# /usr/share/electrum-dash/
+install -d %{buildroot}%{installtree}
+
+# XXX -- experimental and holdover stuff from 2.9.4 -todd
+# /usr/[lib,lib64]/electrum-dash/
+#install -d %%{buildroot}%%{_libdir}/%%{name}
 # /etc/electrum-dash/
 #install -d %%{buildroot}%%{_sysconfdir}/%%{name}
 # /var/lib/electrum-dash/...
 #install -d %%{buildroot}%%{_sharedstatedir}/%%{name}
 # /var/log/electrum-dash/
 #install -d -m750 %%{buildroot}%%{_localstatedir}/log/%%{name}
-# /usr/share/electrum-dash/
-install -d %{buildroot}%{installtree}
-# /usr/lib/python2.7/site-packages/
-%define _site_packages %(/usr/bin/python -c "import site; print(site.getsitepackages()[0])")
-install -d %{buildroot}%{_site_packages}
-
+## /usr/lib/python2.7/site-packages/ (python2) or /usr/lib/python3.6/site-packages/ (python3)
+## XXX holdover from v2.9.4 - going away
+#%%define _site_packages2 %%(%%__python2 -c "import site; print(site.getsitepackages()[0])")
+#%%define _site_packages3 %%(%%__python3 -c "import site; print(site.getsitepackages()[0])")
+#install -d %%{buildroot}%%{_site_packages2}
+#install -d %%{buildroot}%%{_site_packages3}
 # Binaries
 #install -D -p %%{srccodetree}/%%{name}-process.sh %%{buildroot}%%{installtree}/%%{name}-process.sh
 
@@ -330,16 +355,39 @@ install -d %{buildroot}%{_site_packages}
 
 # Desktop
 install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.128x128.png %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.16x16.png   %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.22x22.png   %{buildroot}%{_datadir}/icons/hicolor/22x22/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.24x24.png   %{buildroot}%{_datadir}/icons/hicolor/24x24/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.256x256.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.32x32.png   %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.48x48.png   %{buildroot}%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.svg         %{buildroot}%{_datadir}/icons/hicolor/48x48/apps/%{name}.svg
+
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.128x128.png %{buildroot}%{_datadir}/icons/highcontrast/128x128/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.16x16.png   %{buildroot}%{_datadir}/icons/highcontrast/16x16/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.22x22.png   %{buildroot}%{_datadir}/icons/highcontrast/22x22/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.24x24.png   %{buildroot}%{_datadir}/icons/highcontrast/24x24/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.256x256.png %{buildroot}%{_datadir}/icons/highcontrast/256x256/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.32x32.png   %{buildroot}%{_datadir}/icons/highcontrast/32x32/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.48x48.png   %{buildroot}%{_datadir}/icons/highcontrast/48x48/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.svg         %{buildroot}%{_datadir}/icons/highcontrast/48x48/apps/%{name}.svg
+
+# electrum-dash.desktop
 desktop-file-install --dir=%{buildroot}%{_datadir}/applications/ %{srccontribtree}/desktop/%{name}.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+
+# electrum-dash.appdata.xml
 install -D -m644 -p %{srccontribtree}/desktop/%{name}.appdata.xml %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.appdata.xml
 
 # Binaries
 ln -s %{installtree}/%{name} %{buildroot}%{_bindir}/%{name}
 ln -s %{installtree}/%{name} %{buildroot}%{_bindir}/%{name3}
 
-# Special needs
-cp -a %{srccontribtree}/x11_hash* %{buildroot}%{_site_packages}/
-cp -a %{srccontribtree}/trezor* %{buildroot}%{_site_packages}/
+## Special needs
+## XXX holdover from v2.9.4 - going away
+#cp -a %%{srccontribtree}/x11_hash* %%{buildroot}%%{_site_packages2}/
+#cp -a %%{srccontribtree}/trezor* %%{buildroot}%%{_site_packages}/
 
 
 %files
@@ -365,8 +413,9 @@ cp -a %{srccontribtree}/trezor* %{buildroot}%{_site_packages}/
 %{_bindir}/%{name3}
 
 # Special needs
-%{_site_packages}/x11_hash*
-%{_site_packages}/trezor*
+# XXX holdover from v2.9.4 - going away
+#%%{_site_packages3}/x11_hash*
+#%%{_site_packages3}/trezor*
 
 
 %pre
@@ -382,13 +431,21 @@ cp -a %{srccontribtree}/trezor* %{buildroot}%{_site_packages}/
 
 
 %changelog
-* May May 10 2018 Todd Warner <t0dd@protonmail.com> 2.9.4-0.1.testing.taw1
-- spec file change: mkdir -p instead of just mkdir, otherwise repeated  
-  rpmbuilds without full cleanup will explode.
-
-* Fri May 4 2018 Todd Warner <t0dd@protonmail.com> 2.9.4-0.1.testing.taw0
-- spec file change: update the desktop database upon post installation or  
-  uninstallation
+* Sat May 12 2018 Todd Warner <t0dd@protonmail.com> 3.0.6-0.1.testing.taw[n]
+  - v3.0.6
+  - python3 and QT5 stuff and turn off automated byte-compiling of python
+    since it is so error-prone:  
+    https://fedoraproject.org/wiki/Changes/No_more_automagic_Python_bytecompilation  
+    https://fedoraproject.org/wiki/Packaging:Python_Appendix#Manual_byte_compilation
+  - Added a whole pile of app icons (in -contrib tarball)
+  - desktop-file-validate and appstream-util validate-relax added as is  
+    required of desktop applications.
+  - spec file change: mkdir -p instead of just mkdir, otherwise repeated  
+    rpmbuilds without full cleanup will explode
 
 * Fri May 4 2018 Todd Warner <t0dd@protonmail.com> 2.9.4-0.1.testing.taw[n]
-- Initial test build.
+  - spec file change: update the desktop database upon post installation or  
+    uninstallation
+  
+* Fri May 4 2018 Todd Warner <t0dd@protonmail.com> 2.9.4-0.1.testing.taw[n]
+  - Initial test build.
