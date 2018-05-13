@@ -16,22 +16,21 @@ private, and secure.</p>
 
   <launchable type="desktop-id">electrum-dash.desktop</launchable>
 
-<!--
   <screenshots>
     <screenshot type="default">
-      <caption>Dashboard</caption>
-      <image>https://raw.githubusercontent.com/Bertrand256/dash-masternode-tool/master/doc/img/dmt-main-window.png</image>
+      <caption>Receive pending</caption>
+      <image>https://docs.dash.org/en/latest/_images/receive-pending.png</image>
     </screenshot>
     <screenshot>
-      <caption>Configuration</caption>
-      <image>https://raw.githubusercontent.com/Bertrand256/dash-masternode-tool/master/doc/img/dmt-config-dlg-misc.png</image>
+      <caption>Transaction details</caption>
+      <image>https://docs.dash.org/en/latest/_images/transaction-details.png</image>
     </screenshot>
     <screenshot>
-      <caption>Funds Transfer</caption>
-      <image>https://raw.githubusercontent.com/Bertrand256/dash-masternode-tool/master/doc/img/dmt-transfer-funds.png</image>
+      <caption>Pay-to-many</caption>
+      <image>https://docs.dash.org/en/latest/_images/faq-paytomany.png</image>
     </screenshot>
   </screenshots>
--->
+
   <url type="homepage">https://github.com/taw00/electrum-dash-rpm</url>
   <project_group>Dash Project</project_group>
 
