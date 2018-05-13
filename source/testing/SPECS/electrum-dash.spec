@@ -45,7 +45,7 @@ Version: %{vermajor}.%{verminor}
 # If pre-production - "targetIsProduction 0"
 # eg. 0.6.testing -- pkgrel_preprod should always equal pkgrel_prod-1
 %define pkgrel_preprod 0
-%define extraver_preprod 1
+%define extraver_preprod 2
 %define snapinfo testing
 #%%define snapinfo testing.20180424
 #%%define snapinfo beta2.41d5c63.gh
@@ -381,6 +381,7 @@ install -D -m644 -p %{srccontribtree}/desktop/%{name}.appdata.xml %{buildroot}%{
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.appdata.xml
 
 # Binaries
+install -D -m755 -p %{srccontribtree}/desktop/%{name}-desktop-script.sh %{buildroot}%{installtree}/
 ln -s %{installtree}/%{name} %{buildroot}%{_bindir}/%{name}
 ln -s %{installtree}/%{name} %{buildroot}%{_bindir}/%{name3}
 
@@ -403,14 +404,16 @@ ln -s %{installtree}/%{name} %{buildroot}%{_bindir}/%{name3}
 
 %{installtree}/*
 
+# Binaries
+%{_bindir}/%{name}
+%{_bindir}/%{name3}
+# included via {installtree}/* above
+#%%{installtree}/%%{name}-desktop-script.sh
+
 # Desktop
 %{_datadir}/icons/*
 %{_datadir}/applications/%{name}.desktop
 %{_metainfodir}/%{name}.appdata.xml
-
-# Binaries
-%{_bindir}/%{name}
-%{_bindir}/%{name3}
 
 # Special needs
 # XXX holdover from v2.9.4 - going away
@@ -431,6 +434,10 @@ ln -s %{installtree}/%{name} %{buildroot}%{_bindir}/%{name3}
 
 
 %changelog
+* Sat May 12 2018 Todd Warner <t0dd@protonmail.com> 3.0.6-0.2.testing.taw[n]
+  - Added script that places the data directory in a more linuxy place:  
+    ~/.config/electrum-dash (versus the upstream default of ~/.electrum-dash
+
 * Sat May 12 2018 Todd Warner <t0dd@protonmail.com> 3.0.6-0.1.testing.taw[n]
   - v3.0.6
   - python3 and QT5 stuff and turn off automated byte-compiling of python

@@ -1,6 +1,6 @@
 Name:		toddpkgs-electrum-dash-repo
 Version:	1.0
-Release:	0.1.testing%{?dist}.taw0
+Release:	0.2.testing%{?dist}.taw0
 Summary:	Repository configuration to enable management of Dash Electrum packages
 
 # Note, Group has been deprecated for years.
@@ -78,6 +78,9 @@ install -D -m644 todd-694673ED-public-2030-01-04.2016-11-07.asc %{buildroot}%{_s
 
 
 %changelog
+* Sat May 12 2018 Todd Warner <t0dd at protonmail.com> 1.0-0.2.testing.taw[n]
+  - Metadata for test package repo is always expired.
+
 * Sun Apr 15 2018 Todd Warner <t0dd at protonmail.com> 1.0-0.1.testing.taw[n]
-- Initial test build
+  - Initial test build
 

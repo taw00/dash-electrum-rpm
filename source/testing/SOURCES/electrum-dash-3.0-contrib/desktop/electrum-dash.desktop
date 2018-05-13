@@ -1,14 +1,12 @@
 [Desktop Entry]
-Comment=Lightweight Dashpay Client
-Exec=electrum-dash %u
-GenericName[en_US]=Dash Electrum
-GenericName=Dash Electrum
-Icon=electrum-dash
-Name[en_US]=Dash Electrum Wallet
 Name=Dash Electrum Wallet
-Categories=Network;
+Comment=Lightweight Dashpay Wallet (Dash Cryptocurrency)
+GenericName=Cryptocurrency Wallet
+Categories=Office;Finance;X-Cryptocurrency;X-Dash
+Exec=/usr/share/electrum-dash/electrum-dash-desktop-script.sh
+Icon=electrum-dash
 StartupNotify=false
 Terminal=false
 Type=Application
-MimeType=x-scheme-handler/dashpay;
-
+GenericName[en_US]=Cryptocurrency Wallet
+Name[en_US]=Dash Electrum Wallet

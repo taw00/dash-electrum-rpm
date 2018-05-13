@@ -7,7 +7,7 @@ run into any issues please.
 
 ```
 sudo rpm --import https://keybase.io/toddwarner/key.asc
-sudo dnf install -y https://raw.githubusercontent.com/taw00/electrum-dash-rpm/master/toddpkgs-electrum-dash-repo-1.0-0.1.testing.fc27.taw0.noarch.rpm
+sudo dnf install -y https://raw.githubusercontent.com/taw00/electrum-dash-rpm/master/toddpkgs-electrum-dash-repo-1.0-0.2.testing.fc28.taw0.noarch.rpm
 sudo dnf list | grep electrum
 sudo dnf list --refresh | grep electrum # if it doesn't show up right away
 sudo dnf install electrum-dash
@@ -25,9 +25,9 @@ For feedback or comment: <t0dd@protonmail.com>
 
 You can send and receive funds, but...
 
-* Segfaults on Send > QR Code **--FIXED (though doesn't work with my camera)**
-* ```"sni-qt/14318" WARN  20:57:02.778 void StatusNotifierItemFactory::connectToSnw() Invalid interface to SNW_SERVICE``` **--FIXED**
-* Never seems to mark something as "confirmed". (still investigating)
+* Segfaults on Send > QR Code **--FIXED (v3.0.6 - though doesn't work with my camera)**
+* ```"sni-qt/14318" WARN  20:57:02.778 void StatusNotifierItemFactory::connectToSnw() Invalid interface to SNW_SERVICE``` **--FIXED (v3.0.6)**
+* Never seems to mark something as "confirmed" **--FIXED (v3.0.6)**
 * Default directory has permissions 755. Really should be 750. But the wallet is encrypted so... meh.
 * Default directory is ~/.electrum-dash. Should really be ~/.config/electrum-dash -- I may address this. We'll see.
 

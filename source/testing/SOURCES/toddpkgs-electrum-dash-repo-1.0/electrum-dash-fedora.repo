@@ -1,0 +1,54 @@
+# Dash Electrum Cryptocurrency Desktop (light) Wallet for Fedora
+#
+# DNF repository configuration
+# Drop this file, as root, into your /etc/yum.repos.d/ directory...
+#   cd /etc/yum.repos.d/
+#   sudo curl -O https://raw.githubusercontent.com/taw00/electrum-rpm/master/electrum-dash-fedora.repo
+#   sudo dnf list | grep electrum
+#
+# To install, you would do this at the commandline:
+#   sudo dnf install electrum-dash
+#
+# To update already existing software
+# Note: check http://electrum.dash.org/ to see if there are special upgrade
+#       steps that need to be taken.
+#   sudo dnf upgrade
+#
+# To switch from one repository version to the next (example, stable to testing)...
+#   sudo dnf config-manager --set-disabled electrum-dash-stable
+#   sudo dnf config-manager --set-enabled electrum-dash-testing
+#
+# Notes:
+# * This file is a convenience file that manages the releases nicely.
+#   If you are familiar with Fedora COPR, you can follow the direct enablement
+#   procedures here instead if you like:
+#   https://copr.fedorainfracloud.org/coprs/taw/electrum-dash/
+#   https://copr.fedorainfracloud.org/coprs/taw/electrum-dash-testing/
+# * SRPMs (*.src.rpm files) are mingled with the binaries. It's just how Copr does it.
+#
+# Feedback: t0dd@protonmail.com
+
+[electrum-dash-stable]
+enabled=0
+name=Dash Electrum - stable - fedora-$releasever-$basearch
+baseurl=https://copr-be.cloud.fedoraproject.org/results/taw/electrum-dash/fedora-$releasever-$basearch/
+type=rpm-md
+skip_if_unavailable=True
+gpgcheck=1
+gpgkey=https://copr-be.cloud.fedoraproject.org/results/taw/electrum-dash/pubkey.gpg
+repo_gpgcheck=0
+#enabled_metadata=1
+metadata_expire=1d
+
+[electrum-dash-testing]
+enabled=1
+name=Dash Electrum - testing - fedora-$releasever-$basearch
+baseurl=https://copr-be.cloud.fedoraproject.org/results/taw/electrum-dash-testing/fedora-$releasever-$basearch/
+type=rpm-md
+skip_if_unavailable=True
+gpgcheck=1
+gpgkey=https://copr-be.cloud.fedoraproject.org/results/taw/electrum-dash-testing/pubkey.gpg
+repo_gpgcheck=0
+enabled_metadata=1
+metadata_expire=0
+
