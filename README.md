@@ -35,7 +35,12 @@ sudo dnf install electrum-dash
 
 Then browse your desktop menuing system for Dash Electrum! :)
 
-Primary website and github for the originating application is here and here: <http://electrum.dash.org/> - <https://github.com/akhavr/electrum-dash>
+## More information
+
+* Home for these RPMs (you are here): <https://github.com/taw00/electrum-dash-rpm/>
+* Website for the originating application: <http://electrum.dash.org/>
+* Github for the originating application: <https://github.com/akhavr/electrum-dash>
+* Documentation (at dash.org): <https://docs.dash.org/en/latest/wallets/index.html#dash-electrum-wallet>
 
 For feedback or comment: **`t0dd_at_protonmail.com`**
 
