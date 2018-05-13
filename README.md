@@ -1,5 +1,7 @@
 # Dash Electrum
-The Dash Electrum Lightweight Crypocurrency Desktop Wallet for Fedora Linux
+**The Dash Electrum Lightweight Crypocurrency Desktop Wallet for Fedora Linux**
+
+## Important commentary
 
 > **DON'T USE THIS FOR SERIOUS MONEY**
 >
@@ -21,7 +23,7 @@ The Dash Electrum Lightweight Crypocurrency Desktop Wallet for Fedora Linux
 > `electrum-dash` from the commandline, the behavior is to, by default, use the
 > legacy location. I may change that in the future.
 
-**Initial installation**
+## Initial installation
 
 ```
 sudo rpm --import https://keybase.io/toddwarner/key.asc
@@ -39,11 +41,13 @@ For feedback or comment: **`t0dd_at_protonmail.com`**
 
 ---
 
-## Known issues (still only building test packages):
+## Known issues:
 
-You can send and receive funds, but...
+* No known significant issues.
 
-* Segfaults on Send > QR Code **--FIXED (v3.0.6 - though doesn't work with my camera)**
+Past issues...
+
+* Segfaults on Send > QR Code **--FIXED in v3.0.6 - though doesn't work with my camera**
 * ```"sni-qt/14318" WARN  20:57:02.778 void StatusNotifierItemFactory::connectToSnw() Invalid interface to SNW_SERVICE``` **--FIXED (v3.0.6)**
 * Never seems to mark something as "confirmed" **--FIXED (v3.0.6)**
 * Default directory has permissions 755. Really should be 751. But the wallet
