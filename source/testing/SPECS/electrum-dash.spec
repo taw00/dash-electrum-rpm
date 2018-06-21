@@ -1,4 +1,5 @@
 # electrum-dash.spec
+# vim:tw=0:ts=2:sw=2:et:
 #
 # This SPEC file with appropriate source archives will build and install
 # Dash Electrum Light Wallet.
@@ -22,7 +23,6 @@ Name: electrum-dash
 Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 
 %define targetIsProduction 0
-%define includeSnapinfo 1
 %define includeMinorbump 1
 %define sourceIsPrebuilt 0
 
@@ -32,8 +32,10 @@ Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 
 # VERSION
 # eg. 1.0.1
-%define vermajor 3.0
-%define verminor 6
+%define vermajor1 3.0
+%define vermajor2 6
+%define vermajor %{vermajor1}.%{vermajor2}
+%define verminor 3
 Version: %{vermajor}.%{verminor}
 
 
@@ -45,7 +47,7 @@ Version: %{vermajor}.%{verminor}
 # If pre-production - "targetIsProduction 0"
 # eg. 0.6.testing -- pkgrel_preprod should always equal pkgrel_prod-1
 %define pkgrel_preprod 0
-%define extraver_preprod 2
+%define extraver_preprod 1
 %define snapinfo testing
 #%%define snapinfo testing.20180424
 #%%define snapinfo beta2.41d5c63.gh
@@ -55,19 +57,9 @@ Version: %{vermajor}.%{verminor}
 %define snapinfo_rp rp
 
 # if includeMinorbump
-%define minorbump taw1
+%define minorbump taw0
 
 # Building the release string (don't edit this)...
-
-%if %{targetIsProduction}
-  %if %{includeSnapinfo}
-    %{warn:"Warning: target is production and yet you want snapinfo included. This is not typical."}
-  %endif
-%else
-  %if ! %{includeSnapinfo}
-    %{warn:"Warning: target is pre-production and yet you elected not to incude snapinfo (testing, beta, ...). This is not typical."}
-  %endif
-%endif
 
 # release numbers
 %undefine _relbuilder_pt1
@@ -82,7 +74,7 @@ Version: %{vermajor}.%{verminor}
 
 # snapinfo and repackage (pre-built) indicator
 %undefine _relbuilder_pt2
-%if ! %{includeSnapinfo}
+%if %{targetIsProduction}
   %undefine snapinfo
 %endif
 %if 0%{?sourceIsPrebuilt:1}
@@ -130,17 +122,29 @@ Release: %{_release}
 # You can/should use URLs for sources as well. That is beyond the scope of
 # this example.
 # https://fedoraproject.org/wiki/Packaging:SourceURL
-Source0: %{name}-%{version}.tar.gz
-Source1: %{name}-%{vermajor}-contrib.tar.gz
+Source0: https://github.com/akhavr/electrum-dash/archive/%{version}/%{name}-%{version}.tar.gz
+#Source0: %%{name}-%%{version}.tar.gz
+%if %{targetIsProduction}
+Source1: https://github.com/taw00/electrum-dash-rpm/blob/master/source/SOURCES/%{name}-%{vermajor1}-contrib.tar.gz
+%else
+Source1: https://github.com/taw00/electrum-dash-rpm/blob/master/source/testing/SOURCES/%{name}-%{vermajor1}-contrib.tar.gz
+%endif
 %if %{sourceIsPrebuilt}
 Source10: %{name2}-%{version}.tar.gz
 %endif
 
+# Challenging: Unsure of what "Requires" are required for build versus runtime.
+# Thus they closely mirror.
 Requires: python3 python3-qt5
 Requires: python3-jsonrpclib python3-pbkdf2 python3-protobuf
 Requires: python3-qrcode python3-ecdsa python3-pyaes python3-dns
 Requires: python3-requests python3-six python3-mnemonic python3-hidapi
 Requires: python3-trezor python3-libusb1
+# additional requires from ./contrib/requirements.txt
+Requires: python3-certifi python3-chardet python3-idna python3-pysocks
+
+# For Kivy? Fedora doesn't ship python3-kivy unfortunately
+Requires: mtdev python3-pillow python3-pygame
 
 # Turn off the brp-python-bytecompile automagic (RPM's auto-bytecompile)
 # https://fedoraproject.org/wiki/Changes/No_more_automagic_Python_bytecompilation
@@ -172,6 +176,13 @@ BuildRequires: python3-jsonrpclib python3-pbkdf2 python3-protobuf
 BuildRequires: python3-qrcode python3-ecdsa python3-pyaes python3-dns
 BuildRequires: python3-requests python3-six python3-mnemonic python3-hidapi
 BuildRequires: python3-trezor python3-libusb1
+# additional requires from ./contrib/requirements.txt
+BuildRequires: python3-certifi python3-chardet python3-idna python3-pysocks
+# For Kivy? Fedora doesn't ship python3-kivy unfortunately
+# Same as above: python3-devel git
+BuildRequires: mesa-libGL-devel python3-Cython
+BuildRequires: gstreamer1-devel SDL2_ttf-devel SDL2_image-devel SDL2_mixer-devel
+BuildRequires: SDL2_image SDL2_mixer SDL2_ttf python3-pygame
 
 
 # CentOS/RHEL/EPEL can't do "Suggests:"
@@ -206,10 +217,10 @@ URL: https://github.com/taw00/electrum-dash-rpm
 #      \_srccodetree        \_{name}-1.0.1
 #      \_srccodetree2       \_{name2}-1.0.1
 #      \_srccontribtree     \_{name}-1.0-contrib
-%define srcroot %{name}-%{vermajor}
+%define srcroot %{name}-%{vermajor1}
 %define srccodetree %{name}-%{version}
 %define srccodetree2 %{name2}-%{version}
-%define srccontribtree %{name}-%{vermajor}-contrib
+%define srccontribtree %{name}-%{vermajor1}-contrib
 # /usr/share/electrum-dash
 %define installtree %{_datadir}/%{name}
 
@@ -229,10 +240,10 @@ private, and secure.
 # * autosetup -q and setup -q leave out the root directory.
 # I create a root dir and place the source and contribution trees under it.
 # Extracted source tree structure (extracted in .../BUILD)
-#   srcroot               {name}-{vermajor}
+#   srcroot               {name}-{vermajor1}
 #      \_srccodetree        \_{name}-{version}
 #      \_srccodetree2       \_{name2}-{version}
-#      \_srccontribtree     \_{name}-{vermajor}-contrib
+#      \_srccontribtree     \_{name}-{vermajor1}-contrib
 
 mkdir -p %{srcroot}
 # sourcecode
@@ -252,12 +263,6 @@ mv %{srccodetree}/LICENCE %{srccodetree}/LICENSE
 %if %{sourceIsPrebuilt}
 mv %{srccodetree2}/LICENCE %{srccodetree2}/LICENSE
 %endif
-## to quiet a syntax error
-## XXX holdover from v2.9.4 - going away
-#cp %%{srccontribtree}/srcroot/lib_paymentrequest.proto %%{srccodetree}/lib/paymentrequest.proto
-#%if %{sourceIsPrebuilt}
-#cp %%{srccontribtree}/srcroot/lib_paymentrequest.proto %%{srccodetree2}/lib/paymentrequest.proto
-#%endif
 
 # For debugging purposes...
 cd .. ; /usr/bin/tree -df -L 1 %{srcroot} ; cd -
@@ -271,13 +276,17 @@ cd .. ; /usr/bin/tree -df -L 1 %{srcroot} ; cd -
 #gzip %%{buildroot}%%{_mandir}/man1/*.1
 
 cd %{srccontribtree}
-#/usr/bin/pip install x11-hash-1.4.zip --user
-#/usr/bin/pip install x11-hash-1.4.zip -t ./
-#/usr/bin/pip install trezor-0.9.0.tar.gz --user
-#/usr/bin/pip install trezor-0.9.0.tar.gz -t ./
+#/usr/bin/pip3 install kivy --user
+#/usr/bin/pip3 install kivy -t ./
+#python3 setup.py install --prefix=%%{_prefix} --root=%%{buildroot}
+/usr/bin/pip3 install x11_hash.akhavr-master-20180514.zip --user
+/usr/bin/pip3 install x11_hash.akhavr-master-20180514.zip -t ./
+#/usr/bin/pip3 install trezor-0.9.0.tar.gz --user
+#/usr/bin/pip3 install trezor-0.9.0.tar.gz -t ./
 cd ..
 
 %if %{sourceIsPrebuilt}
+  # XXX going away soon
   cd %{srccodetree2}
   # Doin' like this (sorta): https://docs.dash.org/en/latest/wallets/electrum/installation.html`
   /usr/bin/pip install . --user
@@ -291,8 +300,9 @@ cd ..
   
   /usr/bin/pyrcc5 icons.qrc -o gui/qt/icons_rc.py
   /usr/bin/protoc --proto_path=lib/ --python_out=lib/ lib/paymentrequest.proto
-  #./contrib/make_locale
+  # covered in Requires: above
   #./contrib/make_packages
+  ./contrib/make_locale
 %endif
 
 
@@ -328,6 +338,12 @@ install -d %{buildroot}%{_datadir}/applications
 install -d %{buildroot}%{_sysconfdir}/ld.so.conf.d
 # /usr/share/electrum-dash/
 install -d %{buildroot}%{installtree}
+## XXX might be going away
+## /usr/lib/python2.7/site-packages/ (python2) or /usr/lib/python3.6/site-packages/ (python3)
+#%%define _site_packages2 %%(%%__python2 -c "import site; print(site.getsitepackages()[0])")
+#install -d %%{buildroot}%%{_site_packages2}
+%define _site_packages3 %(%__python3 -c "import site; print(site.getsitepackages()[0])")
+install -d %{buildroot}%{python3_sitearch}
 
 # XXX -- experimental and holdover stuff from 2.9.4 -todd
 # /usr/[lib,lib64]/electrum-dash/
@@ -338,38 +354,33 @@ install -d %{buildroot}%{installtree}
 #install -d %%{buildroot}%%{_sharedstatedir}/%%{name}
 # /var/log/electrum-dash/
 #install -d -m750 %%{buildroot}%%{_localstatedir}/log/%%{name}
-## /usr/lib/python2.7/site-packages/ (python2) or /usr/lib/python3.6/site-packages/ (python3)
-## XXX holdover from v2.9.4 - going away
-#%%define _site_packages2 %%(%%__python2 -c "import site; print(site.getsitepackages()[0])")
-#%%define _site_packages3 %%(%%__python3 -c "import site; print(site.getsitepackages()[0])")
-#install -d %%{buildroot}%%{_site_packages2}
-#install -d %%{buildroot}%%{_site_packages3}
 # Binaries
 #install -D -p %%{srccodetree}/%%{name}-process.sh %%{buildroot}%%{installtree}/%%{name}-process.sh
 
 %if %{sourceIsPrebuilt}
+  # XXX Going away soon
   cp -a %{srccodetree2}/* %{buildroot}%{installtree}/
 %else
   cp -a %{srccodetree}/* %{buildroot}%{installtree}/
 %endif
 
 # Desktop
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.128x128.png %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.16x16.png   %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.22x22.png   %{buildroot}%{_datadir}/icons/hicolor/22x22/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.24x24.png   %{buildroot}%{_datadir}/icons/hicolor/24x24/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.256x256.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.32x32.png   %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.48x48.png   %{buildroot}%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.128.png %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.16.png   %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.22.png   %{buildroot}%{_datadir}/icons/hicolor/22x22/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.24.png   %{buildroot}%{_datadir}/icons/hicolor/24x24/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.256.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.32.png   %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.48.png   %{buildroot}%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
 install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.svg         %{buildroot}%{_datadir}/icons/hicolor/48x48/apps/%{name}.svg
 
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.128x128.png %{buildroot}%{_datadir}/icons/highcontrast/128x128/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.16x16.png   %{buildroot}%{_datadir}/icons/highcontrast/16x16/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.22x22.png   %{buildroot}%{_datadir}/icons/highcontrast/22x22/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.24x24.png   %{buildroot}%{_datadir}/icons/highcontrast/24x24/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.256x256.png %{buildroot}%{_datadir}/icons/highcontrast/256x256/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.32x32.png   %{buildroot}%{_datadir}/icons/highcontrast/32x32/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.48x48.png   %{buildroot}%{_datadir}/icons/highcontrast/48x48/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.128.png %{buildroot}%{_datadir}/icons/highcontrast/128x128/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.16.png   %{buildroot}%{_datadir}/icons/highcontrast/16x16/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.22.png   %{buildroot}%{_datadir}/icons/highcontrast/22x22/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.24.png   %{buildroot}%{_datadir}/icons/highcontrast/24x24/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.256.png %{buildroot}%{_datadir}/icons/highcontrast/256x256/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.32.png   %{buildroot}%{_datadir}/icons/highcontrast/32x32/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.48.png   %{buildroot}%{_datadir}/icons/highcontrast/48x48/apps/%{name}.png
 install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.svg         %{buildroot}%{_datadir}/icons/highcontrast/48x48/apps/%{name}.svg
 
 # electrum-dash.desktop
@@ -386,9 +397,10 @@ ln -s %{installtree}/%{name} %{buildroot}%{_bindir}/%{name}
 ln -s %{installtree}/%{name} %{buildroot}%{_bindir}/%{name3}
 
 ## Special needs
-## XXX holdover from v2.9.4 - going away
-#cp -a %%{srccontribtree}/x11_hash* %%{buildroot}%%{_site_packages2}/
-#cp -a %%{srccontribtree}/trezor* %%{buildroot}%%{_site_packages}/
+## XXX -- may be going away
+cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
+#cp -a %%{srccontribtree}/kivy* %%{buildroot}%%{_site_packages3}/
+#cp -a %%{srccontribtree}/trezor* %%{buildroot}%%{_site_packages3}/
 
 
 %files
@@ -416,8 +428,10 @@ ln -s %{installtree}/%{name} %{buildroot}%{_bindir}/%{name3}
 %{_metainfodir}/%{name}.appdata.xml
 
 # Special needs
-# XXX holdover from v2.9.4 - going away
+# XXX may be going away soon
+%{python3_sitearch}/*
 #%%{_site_packages3}/x11_hash*
+#%%{_site_packages3}/kivy*
 #%%{_site_packages3}/trezor*
 
 
@@ -434,11 +448,21 @@ ln -s %{installtree}/%{name} %{buildroot}%{_bindir}/%{name3}
 
 
 %changelog
-* Sat May 12 2018 Todd Warner <t0dd@protonmail.com> 3.0.6-0.2.testing.taw[n]
+* Thu Jun 21 2018 Todd Warner <t0dd_at_protonmail.com> 3.0.6.3-0.1.testing.taw
+  - v3.0.6.3
+  - adjustment to versioning expansion (x.y.z to x.y.z.zz)
+  - some spec file tweaks
+
+* Mon May 14 2018 Todd Warner <t0dd_at_protonmail.com> 3.0.6-0.3.testing.taw
+  - Incorporates X11_hash testing fix:  
+    https://github.com/akhavr/x11_hash/commit/23ca7f09d13945e5d95fa83b477baea0c6f7a1d8
+  - Trezor still not showing up in list of plugins.
+
+* Sat May 12 2018 Todd Warner <t0dd_at_protonmail.com> 3.0.6-0.2.testing.taw
   - Added script that places the data directory in a more linuxy place:  
     ~/.config/electrum-dash (versus the upstream default of ~/.electrum-dash
 
-* Sat May 12 2018 Todd Warner <t0dd@protonmail.com> 3.0.6-0.1.testing.taw[n]
+* Sat May 12 2018 Todd Warner <t0dd_at_protonmail.com> 3.0.6-0.1.testing.taw
   - v3.0.6
   - python3 and QT5 stuff and turn off automated byte-compiling of python
     since it is so error-prone:  
@@ -450,9 +474,9 @@ ln -s %{installtree}/%{name} %{buildroot}%{_bindir}/%{name3}
   - spec file change: mkdir -p instead of just mkdir, otherwise repeated  
     rpmbuilds without full cleanup will explode
 
-* Fri May 4 2018 Todd Warner <t0dd@protonmail.com> 2.9.4-0.1.testing.taw[n]
+* Fri May 4 2018 Todd Warner <t0dd_at_protonmail.com> 2.9.4-0.1.testing.taw
   - spec file change: update the desktop database upon post installation or  
     uninstallation
   
-* Fri May 4 2018 Todd Warner <t0dd@protonmail.com> 2.9.4-0.1.testing.taw[n]
+* Fri May 4 2018 Todd Warner <t0dd_at_protonmail.com> 2.9.4-0.1.testing.taw
   - Initial test build.
