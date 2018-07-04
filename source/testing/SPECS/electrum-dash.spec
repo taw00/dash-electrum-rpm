@@ -26,18 +26,25 @@ Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 %define includeMinorbump 1
 %define sourceIsPrebuilt 0
 
+# Is the version number 3 or 4 component? x.y.z or x.y.z.zz?
+# Eg. (3) 2.9.4, 3.0.6, 3.1.3 ...or (4) 3.0.6.3
+%define versionIsFourComponents 0
+
 
 # Package (RPM) name-version-release.
 # <name>-<vermajor.<verminor>-<pkgrel>[.<extraver>][.<snapinfo>].DIST[.<minorbump>]
 
 # VERSION
 # eg. 1.0.1
-%define vermajor1 3.0
-%define vermajor2 6
-%define vermajor %{vermajor1}.%{vermajor2}
+%define vermajor 3.1
 %define verminor 3
-Version: %{vermajor}.%{verminor}
+%define verminor2 0
 
+%if %{versionIsFourComponents}
+Version: %{vermajor}.%{verminor}.%{verminor2}
+%else
+Version: %{vermajor}.%{verminor}
+%endif
 
 # RELEASE
 # If production - "targetIsProduction 1"
@@ -125,9 +132,9 @@ Release: %{_release}
 Source0: https://github.com/akhavr/electrum-dash/archive/%{version}/%{name}-%{version}.tar.gz
 #Source0: %%{name}-%%{version}.tar.gz
 %if %{targetIsProduction}
-Source1: https://github.com/taw00/electrum-dash-rpm/blob/master/source/SOURCES/%{name}-%{vermajor1}-contrib.tar.gz
+Source1: https://github.com/taw00/electrum-dash-rpm/blob/master/source/SOURCES/%{name}-%{vermajor}-contrib.tar.gz
 %else
-Source1: https://github.com/taw00/electrum-dash-rpm/blob/master/source/testing/SOURCES/%{name}-%{vermajor1}-contrib.tar.gz
+Source1: https://github.com/taw00/electrum-dash-rpm/blob/master/source/testing/SOURCES/%{name}-%{vermajor}-contrib.tar.gz
 %endif
 %if %{sourceIsPrebuilt}
 Source10: %{name2}-%{version}.tar.gz
@@ -217,10 +224,10 @@ URL: https://github.com/taw00/electrum-dash-rpm
 #      \_srccodetree        \_{name}-1.0.1
 #      \_srccodetree2       \_{name2}-1.0.1
 #      \_srccontribtree     \_{name}-1.0-contrib
-%define srcroot %{name}-%{vermajor1}
+%define srcroot %{name}-%{vermajor}
 %define srccodetree %{name}-%{version}
 %define srccodetree2 %{name2}-%{version}
-%define srccontribtree %{name}-%{vermajor1}-contrib
+%define srccontribtree %{name}-%{vermajor}-contrib
 # /usr/share/electrum-dash
 %define installtree %{_datadir}/%{name}
 
@@ -240,10 +247,10 @@ private, and secure.
 # * autosetup -q and setup -q leave out the root directory.
 # I create a root dir and place the source and contribution trees under it.
 # Extracted source tree structure (extracted in .../BUILD)
-#   srcroot               {name}-{vermajor1}
+#   srcroot               {name}-{vermajor}
 #      \_srccodetree        \_{name}-{version}
 #      \_srccodetree2       \_{name2}-{version}
-#      \_srccontribtree     \_{name}-{vermajor1}-contrib
+#      \_srccontribtree     \_{name}-{vermajor}-contrib
 
 mkdir -p %{srcroot}
 # sourcecode
@@ -448,6 +455,9 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 
 
 %changelog
+* Wed Jul 04 2018 Todd Warner <t0dd_at_protonmail.com> 3.1.3-0.1.testing.taw
+  - v3.1.3 (back to x.y.z and not x.y.z.zz)
+
 * Thu Jun 21 2018 Todd Warner <t0dd_at_protonmail.com> 3.0.6.3-0.1.testing.taw
   - v3.0.6.3
   - adjustment to versioning expansion (x.y.z to x.y.z.zz)
