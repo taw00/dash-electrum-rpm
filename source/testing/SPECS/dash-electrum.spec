@@ -1,4 +1,4 @@
-# electrum-dash.spec
+# dash-electrum.spec
 # vim:tw=0:ts=2:sw=2:et:
 #
 # This SPEC file with appropriate source archives will build and install
@@ -9,6 +9,10 @@
 # when referring to it formally. And the the executable will be in both
 # orderings.
 #
+# UPDATE (2018-10-14):
+# Upstream now refers to this application as Dash Electrum (and Dash-Electrum),
+# though the source code is still exported as electrum-dash-*.tar.gz
+#
 # Note that we have a flag 'sourceIsPrebuilt' that chooses one of two methods
 # to "build" this application. If flipped off, it will attempt to build the
 # whole stack. If flipped on, we build from a semi-prebuilt version of Dash
@@ -17,13 +21,14 @@
 # bloated .src.rpm package, but whatever.
 
 
-Name: electrum-dash
-%define name2 Electrum-DASH
-%define name3 dash-electrum
+Name: dash-electrum
+%define name1 electrum-dash
+%define name2 Dash-Electrum
+%define name3 Electrum-Dash
+
 Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 
 %define targetIsProduction 0
-%define includeMinorbump 1
 %define sourceIsPrebuilt 0
 
 # Is the version number 3 or 4 component? x.y.z or x.y.z.zz?
@@ -35,11 +40,9 @@ Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 # <name>-<vermajor.<verminor>-<pkgrel>[.<extraver>][.<snapinfo>].DIST[.<minorbump>]
 
 # VERSION
-# eg. 1.0.1
-%define vermajor 3.1
-%define verminor 3
-%define verminor2 0
-
+%define vermajor 3.2
+%define verminor 5
+%define verminor2 1
 %if %{versionIsFourComponents}
 Version: %{vermajor}.%{verminor}.%{verminor2}
 %else
@@ -47,90 +50,88 @@ Version: %{vermajor}.%{verminor}
 %endif
 
 # RELEASE
-# If production - "targetIsProduction 1"
-# eg. 1 (and no other qualifiers)
-%define pkgrel_prod 1
-
-# If pre-production - "targetIsProduction 0"
-# eg. 0.6.testing -- pkgrel_preprod should always equal pkgrel_prod-1
-%define pkgrel_preprod 0
-%define extraver_preprod 1
-%define snapinfo testing
-#%%define snapinfo testing.20180424
-#%%define snapinfo beta2.41d5c63.gh
-
-# if sourceIsPrebuilt (rp=repackaged)
-# eg. 1.rp (prod) or 0.6.testing.rp (pre-prod)
-%define snapinfo_rp rp
-
-# if includeMinorbump
-%define minorbump taw0
-
-# Building the release string (don't edit this)...
-
-# release numbers
-%undefine _relbuilder_pt1
-%if %{targetIsProduction}
-  %define _pkgrel %{pkgrel_prod}
-  %define _relbuilder_pt1 %{pkgrel_prod}
-%else
-  %define _pkgrel %{pkgrel_preprod}
-  %define _extraver %{extraver_preprod}
-  %define _relbuilder_pt1 %{_pkgrel}.%{_extraver}
+%define _pkgrel 1
+%if ! %{targetIsProduction}
+  %define _pkgrel 0.1
 %endif
 
-# snapinfo and repackage (pre-built) indicator
-%undefine _relbuilder_pt2
+# MINORBUMP
+# (for very small or rapid iterations)
+%define minorbump taw
+
+#
+# Build the release string - don't edit this
+#
+
+# rp = repackaged
+# eg. 1.rp (prod) or 0.6.testing.rp (pre-prod)
+%define _snapinfo testing
+%define _snapinfo_rp rp
+
 %if %{targetIsProduction}
   %undefine snapinfo
 %endif
-%if 0%{?sourceIsPrebuilt:1}
-  %if ! %{sourceIsPrebuilt}
-    %undefine snapinfo_rp
-  %endif
-%else
-  %undefine snapinfo_rp
+
+%if ! %{sourceIsPrebuilt}
+   %undefine _snapinfo_rp
 %endif
-%if 0%{?snapinfo_rp:1}
-  %if 0%{?snapinfo:1}
-    %define _relbuilder_pt2 %{snapinfo}.%{snapinfo_rp}
+
+%if 0%{?_snapinfo:1}
+  %if 0%{?_snapinfo_rp:1}
+    %define snapinfo %{_snapinfo}.%{_snapinfo_rp}
   %else
-    %define _relbuilder_pt2 %{snapinfo_rp}
+    %define snapinfo %{_snapinfo}
   %endif
 %else
-  %if 0%{?snapinfo:1}
-    %define _relbuilder_pt2 %{snapinfo}
+  %if 0%{?_snapinfo_rp:1}
+    %define snapinfo %{_snapinfo_rp}
+  %else
+    %undefine snapinfo
   %endif
 %endif
 
-# put it all together
-# pt1 will always be defined. pt2 and minorbump may not be
-%define _release %{_relbuilder_pt1}
+# pkgrel will be defined, snapinfo and minorbump may not be
+%define _release %{_pkgrel}
+%define includeMinorbump 1
 %if ! %{includeMinorbump}
   %undefine minorbump
 %endif
-%if 0%{?_relbuilder_pt2:1}
+%if 0%{?snapinfo:1}
   %if 0%{?minorbump:1}
-    %define _release %{_relbuilder_pt1}.%{_relbuilder_pt2}%{?dist}.%{minorbump}
+    %define _release %{_pkgrel}.%{snapinfo}%{?dist}.%{minorbump}
   %else
-    %define _release %{_relbuilder_pt1}.%{_relbuilder_pt2}%{?dist}
+    %define _release %{_pkgrel}.%{snapinfo}%{?dist}
   %endif
 %else
   %if 0%{?minorbump:1}
-    %define _release %{_relbuilder_pt1}%{?dist}.%{minorbump}
+    %define _release %{_pkgrel}%{?dist}.%{minorbump}
   %else
-    %define _release %{_relbuilder_pt1}%{?dist}
+    %define _release %{_pkgrel}%{?dist}
   %endif
 %endif
 
 Release: %{_release}
+
 # ----------- end of release building section
 
-# You can/should use URLs for sources as well. That is beyond the scope of
-# this example.
+# how are debug info and build_ids managed (I only halfway understand this):
+# https://github.com/rpm-software-management/rpm/blob/master/macros.in
+%define debug_package %{nil}
+%define _unique_build_ids 1
+%define _build_id_links alldebug
+
+# https://fedoraproject.org/wiki/Changes/Harden_All_Packages
+%define _hardened_build 1
+
+# Needed because of naming change from electrum-dash to dash-electrum as of
+# version 3.2.3 (otherwise package will not update).
+Provides: electrum-dash = 3.2.3
+Obsoletes: electrum-dash < 3.2.3
+
+# You can/should use URLs for sources.
 # https://fedoraproject.org/wiki/Packaging:SourceURL
-Source0: https://github.com/akhavr/electrum-dash/archive/%{version}/%{name}-%{version}.tar.gz
-#Source0: %%{name}-%%{version}.tar.gz
+Source0: https://github.com/akhavr/electrum-dash/archive/%{version}/%{name1}-%{version}.tar.gz
+#Source0: %%{name1}-%%{version}.tar.gz
 %if %{targetIsProduction}
 Source1: https://github.com/taw00/electrum-dash-rpm/blob/master/source/SOURCES/%{name}-%{vermajor}-contrib.tar.gz
 %else
@@ -164,10 +165,6 @@ Requires: mtdev python3-pillow python3-pygame
 # Note, this is going away as an advised path.
 %global __python %{__python3}
 
-# So I can introspect the mock build environment...
-BuildRequires: tree
-#BuildRequires: tree vim-enhanced less
-
 # Required for desktop applications (validation of .desktop and .xml files)
 BuildRequires: desktop-file-utils libappstream-glib
 
@@ -185,50 +182,35 @@ BuildRequires: python3-requests python3-six python3-mnemonic python3-hidapi
 BuildRequires: python3-trezor python3-libusb1
 # additional requires from ./contrib/requirements.txt
 BuildRequires: python3-certifi python3-chardet python3-idna python3-pysocks
+# /usr/bin/pip3 and /usr/bin/pip
+BuildRequires: python3-pip python2-pip
 # For Kivy? Fedora doesn't ship python3-kivy unfortunately
 # Same as above: python3-devel git
 BuildRequires: mesa-libGL-devel python3-Cython
 BuildRequires: gstreamer1-devel SDL2_ttf-devel SDL2_image-devel SDL2_mixer-devel
 BuildRequires: SDL2_image SDL2_mixer SDL2_ttf python3-pygame
+BuildRequires: ImageMagick
 
-
-# CentOS/RHEL/EPEL can't do "Suggests:"
-%if 0%{?fedora:1}
-#Suggests:
+#t0dd: for build environment introspection
+%if ! %{targetIsProduction}
+BuildRequires: tree vim-enhanced less findutils
 %endif
+
 
 License: MIT
 URL: https://github.com/taw00/electrum-dash-rpm
-# Group is deprecated. Don't use it. Left here as a reminder...
-# https://fedoraproject.org/wiki/RPMGroups 
-#Group: Unspecified
-
-# If you comment out "debug_package" RPM will create additional RPMs that can
-# be used for debugging purposes. I am not an expert at this, BUT ".build_ids"
-# are associated to debug packages, and I have lately run into packaging
-# conflicts because of them. This is a topic I can't share a whole lot of
-# wisdom about, but for now... I turn all that off.
-# 
-# How debug info and build_ids managed (I only halfway understand this):
-# https://github.com/rpm-software-management/rpm/blob/master/macros.in
-%define debug_package %{nil}
-%define _unique_build_ids 1
-%define _build_id_links alldebug
-
-# https://fedoraproject.org/wiki/Changes/Harden_All_Packages
-# https://fedoraproject.org/wiki/Packaging:Guidelines#PIE
-%define _hardened_build 1
+ExclusiveArch: x86_64 i686 i386
 
 # Extracted source tree structure (extracted in .../BUILD)
 #   srcroot               {name}-1.0
-#      \_srccodetree        \_{name}-1.0.1
+#      \_srccodetree        \_{name1}-1.0.1
 #      \_srccodetree2       \_{name2}-1.0.1
 #      \_srccontribtree     \_{name}-1.0-contrib
 %define srcroot %{name}-%{vermajor}
-%define srccodetree %{name}-%{version}
+%define srccodetree %{name1}-%{version}
 %define srccodetree2 %{name2}-%{version}
 %define srccontribtree %{name}-%{vermajor}-contrib
-# /usr/share/electrum-dash
+# /usr/share/dash-electrum
 %define installtree %{_datadir}/%{name}
 
 
@@ -248,7 +230,7 @@ private, and secure.
 # I create a root dir and place the source and contribution trees under it.
 # Extracted source tree structure (extracted in .../BUILD)
 #   srcroot               {name}-{vermajor}
-#      \_srccodetree        \_{name}-{version}
+#      \_srccodetree        \_{name1}-{version}
 #      \_srccodetree2       \_{name2}-{version}
 #      \_srccontribtree     \_{name}-{vermajor}-contrib
 
@@ -266,9 +248,9 @@ mkdir -p %{srcroot}
 #echo "%%{_libdir}/%%{name}" > %%{srccontribtree}/etc-ld.so.conf.d_%%{name}.conf
 
 # misspelled filename
-mv %{srccodetree}/LICENCE %{srccodetree}/LICENSE
+cp %{srccodetree}/LICENCE %{srccontribtree}/LICENSE
 %if %{sourceIsPrebuilt}
-mv %{srccodetree2}/LICENCE %{srccodetree2}/LICENSE
+cp %{srccodetree2}/LICENCE %{srccontribtree}/LICENSE
 %endif
 
 # For debugging purposes...
@@ -283,13 +265,13 @@ cd .. ; /usr/bin/tree -df -L 1 %{srcroot} ; cd -
 #gzip %%{buildroot}%%{_mandir}/man1/*.1
 
 cd %{srccontribtree}
-#/usr/bin/pip3 install kivy --user
-#/usr/bin/pip3 install kivy -t ./
-#python3 setup.py install --prefix=%%{_prefix} --root=%%{buildroot}
-/usr/bin/pip3 install x11_hash.akhavr-master-20180514.zip --user
-/usr/bin/pip3 install x11_hash.akhavr-master-20180514.zip -t ./
-#/usr/bin/pip3 install trezor-0.9.0.tar.gz --user
-#/usr/bin/pip3 install trezor-0.9.0.tar.gz -t ./
+####/usr/bin/pip3 install kivy --user
+####/usr/bin/pip3 install kivy -t ./
+####python3 setup.py install --prefix=%%{_prefix} --root=%%{buildroot}
+###/usr/bin/pip3 install x11_hash.akhavr-master-20180514.zip --user
+###/usr/bin/pip3 install x11_hash.akhavr-master-20180514.zip -t ./
+####/usr/bin/pip3 install trezor-0.9.0.tar.gz --user
+####/usr/bin/pip3 install trezor-0.9.0.tar.gz -t ./
 cd ..
 
 %if %{sourceIsPrebuilt}
@@ -297,6 +279,8 @@ cd ..
   cd %{srccodetree2}
   # Doin' like this (sorta): https://docs.dash.org/en/latest/wallets/electrum/installation.html`
   /usr/bin/pip install . --user
+
+# Source is NOT prebuilt...
 %else
   # I've had issues getting this to build still solidifying
   cd %{srccodetree}
@@ -310,6 +294,19 @@ cd ..
   # covered in Requires: above
   #./contrib/make_packages
   ./contrib/make_locale
+
+# Source is NOT prebuilt (experimental -- currently doesn't run)...
+%else
+  cd %{srccodetree}
+  /usr/bin/pip3 install .[fast] -t ./
+  # ImageMagick conversion of svg's to png's
+  for i in lock unlock confirmed status_lagging status_disconnected status_connected_proxy status_connected status_waiting preferences; do convert -background none icons/$i.svg icons/$i.png; done
+  # protobuf-compiler
+  protoc --proto_path=electrum_dash --python_out=electrum_dash electrum_dash/paymentrequest.proto
+  # python3-requests gettext -- translations
+  ./contrib/make_locale
+  # make the packages
+  ./contrib/make_packages
 %endif
 
 
@@ -330,10 +327,16 @@ cd ..
 #   _prefix = /usr
 #   _libdir = /usr/lib or /usr/lib64 (depending on system)
 #   https://fedoraproject.org/wiki/Packaging:RPMMacros
-# These three are defined in newer versions of RPM (Fedora not el7)
-%define _tmpfilesdir /usr/lib/tmpfiles.d
-%define _unitdir /usr/lib/systemd/system
-%define _metainfodir %{_datadir}/metainfo
+# This is used to quiet rpmlint who can't seem to understand that /usr/lib is
+# still used for certain things.
+%define _rawlib lib
+%define _usr_lib /usr/%{_rawlib}
+# These three are already defined in newer versions of RPM, but not in el7
+%if 0%{?rhel} && 0%{?rhel} < 8
+  %define _tmpfilesdir %{_usr_lib}/tmpfiles.d
+  %define _unitdir %{_usr_lib}/systemd/system
+  %define _metainfodir %{_datadir}/metainfo
+%endif
 
 # Create directories
 # /usr/bin/ and /usr/sbin/
@@ -353,7 +356,7 @@ install -d %{buildroot}%{installtree}
 install -d %{buildroot}%{python3_sitearch}
 
 # XXX -- experimental and holdover stuff from 2.9.4 -todd
-# /usr/[lib,lib64]/electrum-dash/
+# /usr/[lib,lib64]/dash-electrum/
 #install -d %%{buildroot}%%{_libdir}/%%{name}
 # /etc/electrum-dash/
 #install -d %%{buildroot}%%{_sysconfdir}/%%{name}
@@ -390,18 +393,18 @@ install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.32.png   %{bu
 install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.48.png   %{buildroot}%{_datadir}/icons/highcontrast/48x48/apps/%{name}.png
 install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.svg         %{buildroot}%{_datadir}/icons/highcontrast/48x48/apps/%{name}.svg
 
-# electrum-dash.desktop
+# dash-electrum.desktop
 desktop-file-install --dir=%{buildroot}%{_datadir}/applications/ %{srccontribtree}/desktop/%{name}.desktop
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
-# electrum-dash.appdata.xml
+# dash-electrum.appdata.xml
 install -D -m644 -p %{srccontribtree}/desktop/%{name}.appdata.xml %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.appdata.xml
 
 # Binaries
 install -D -m755 -p %{srccontribtree}/desktop/%{name}-desktop-script.sh %{buildroot}%{installtree}/
 ln -s %{installtree}/%{name} %{buildroot}%{_bindir}/%{name}
-ln -s %{installtree}/%{name} %{buildroot}%{_bindir}/%{name3}
+ln -s %{installtree}/%{name1} %{buildroot}%{_bindir}/%{name}
 
 ## Special needs
 ## XXX -- may be going away
@@ -415,7 +418,7 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 # This section starts us in directory {_buildrootdir}
 # (note, macros like %%docs, etc may locate in {_builddir}
 %defattr(-,root,root,-)
-%license %{srccodetree}/LICENSE
+%license %{srccontribtree}/LICENSE
 
 # The directories...
 # /usr/share/electrum-dash/
@@ -425,7 +428,7 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 
 # Binaries
 %{_bindir}/%{name}
-%{_bindir}/%{name3}
+%{_bindir}/%{name1}
 # included via {installtree}/* above
 #%%{installtree}/%%{name}-desktop-script.sh
 
@@ -455,6 +458,22 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 
 
 %changelog
+* Wed Feb 20 2019 Todd Warner <t0dd_at_protonmail.com> 3.2.5-0.1.testing.taw
+  - v3.2.5
+
+* Thu Jan 17 2019 Todd Warner <t0dd_at_protonmail.com> 3.2.4-0.1.testing.taw
+  - v3.2.4
+
+* Mon Oct 15 2018 Todd Warner <t0dd_at_protonmail.com> 3.2.3.1-0.1.testing.taw
+  - v3.2.3.1
+  - electrum-dash is now dash-electrum via upstream's change to  
+    Dash Electrum/Dash-electrum
+  - support for Tor proxy  
+    https://github.com/akhavr/electrum-dash/releases/tag/3.2.3.1
+
+* Wed Jul 04 2018 Todd Warner <t0dd_at_protonmail.com> 3.2.2.1-0.1.testing.taw
+  - v3.2.2.1
+
 * Wed Jul 04 2018 Todd Warner <t0dd_at_protonmail.com> 3.1.3-0.1.testing.taw
   - v3.1.3 (back to x.y.z and not x.y.z.zz)
 
