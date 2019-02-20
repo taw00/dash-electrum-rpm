@@ -282,14 +282,34 @@ cd ..
 
 # Source is NOT prebuilt...
 %else
+  cd %{srccodetree}
+  /usr/bin/pip3 install pip==18.1
+  /usr/bin/pip3 install .[fast] -t ./
+  # ImageMagick conversion of svg's to png's
+  for i in lock unlock confirmed status_lagging status_disconnected status_connected_proxy status_connected status_waiting preferences; do convert -background none icons/$i.svg icons/$i.png; done
+  # compile icons for QT
+  mkdir -p gui/qt
+  /usr/bin/pyrcc5 icons.qrc -o gui/qt/icons_rc.py
+  # protobuf-compiler
+  /usr/bin/protoc --proto_path=electrum_dash --python_out=electrum_dash electrum_dash/paymentrequest.proto
+  # python3-requests gettext -- translations (OPTIONAL)
+  ./contrib/make_locale
+  # make the packages
+  ./contrib/make_packages
+
+
+# Source is NOT prebuilt (experimental -- currently doesn't run)...
+%else
   # I've had issues getting this to build still solidifying
   cd %{srccodetree}
   # we don't have root access to /usr/lib/python2.7/site-packages/ (or python3.6)
   # Need to build everything locally
   # https://docs.python.org/3/install/index.html#alternate-installation
   %__python3 setup.py install --user
-  
+  # compile icons for QT
+  mkdir -p gui/qt
   /usr/bin/pyrcc5 icons.qrc -o gui/qt/icons_rc.py
+  # protobuf-compiler
   /usr/bin/protoc --proto_path=lib/ --python_out=lib/ lib/paymentrequest.proto
   # covered in Requires: above
   #./contrib/make_packages
