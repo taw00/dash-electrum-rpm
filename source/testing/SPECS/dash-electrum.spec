@@ -13,7 +13,7 @@
 # Upstream now refers to this application as Dash Electrum (and Dash-Electrum),
 # though the source code is still exported as electrum-dash-*.tar.gz
 #
-# Note that we have a flag 'sourceIsPrebuilt' that chooses one of two methods
+# Note that we have a flag '%sourceIsPrebuilt' that chooses one of two methods
 # to "build" this application. If flipped off, it will attempt to build the
 # whole stack. If flipped on, we build from a semi-prebuilt version of Dash
 # Electrum. The release will have an "rp" attached to it which stands for
@@ -52,12 +52,13 @@ Version: %{vermajor}.%{verminor}
 # RELEASE
 %define _pkgrel 1
 %if ! %{targetIsProduction}
-  %define _pkgrel 0.1
+  %define _pkgrel 0.2
 %endif
 
 # MINORBUMP
 # (for very small or rapid iterations)
 %define minorbump taw
+#%%undefine minorbump taw
 
 #
 # Build the release string - don't edit this
@@ -92,10 +93,6 @@ Version: %{vermajor}.%{verminor}
 
 # pkgrel will be defined, snapinfo and minorbump may not be
 %define _release %{_pkgrel}
-%define includeMinorbump 1
-%if ! %{includeMinorbump}
-  %undefine minorbump
-%endif
 %if 0%{?snapinfo:1}
   %if 0%{?minorbump:1}
     %define _release %{_pkgrel}.%{snapinfo}%{?dist}.%{minorbump}
@@ -208,7 +205,7 @@ ExclusiveArch: x86_64 i686 i386
 #      \_srccontribtree     \_{name}-1.0-contrib
 %define srcroot %{name}-%{vermajor}
 %define srccodetree %{name1}-%{version}
-%define srccodetree2 %{name2}-%{version}
+#%%define srccodetree2 %%{name2}-%%{version}
 %define srccontribtree %{name}-%{vermajor}-contrib
 # /usr/share/dash-electrum
 %define installtree %{_datadir}/%{name}
@@ -250,7 +247,7 @@ mkdir -p %{srcroot}
 # misspelled filename
 cp %{srccodetree}/LICENCE %{srccontribtree}/LICENSE
 %if %{sourceIsPrebuilt}
-cp %{srccodetree2}/LICENCE %{srccontribtree}/LICENSE
+  ####cp %%{srccodetree2}/LICENCE %%{srccontribtree}/LICENSE
 %endif
 
 # For debugging purposes...
@@ -276,14 +273,14 @@ cd ..
 
 %if %{sourceIsPrebuilt}
   # XXX going away soon
-  cd %{srccodetree2}
+  #cd %%{srccodetree2}
   # Doin' like this (sorta): https://docs.dash.org/en/latest/wallets/electrum/installation.html`
-  /usr/bin/pip install . --user
+  #/usr/bin/pip install . --user
 
 # Source is NOT prebuilt...
 %else
   cd %{srccodetree}
-  /usr/bin/pip3 install pip==18.1
+  #/usr/bin/pip3 install pip==18.1
   /usr/bin/pip3 install .[fast] -t ./
   # ImageMagick conversion of svg's to png's
   for i in lock unlock confirmed status_lagging status_disconnected status_connected_proxy status_connected status_waiting preferences; do convert -background none icons/$i.svg icons/$i.png; done
@@ -298,35 +295,35 @@ cd ..
   ./contrib/make_packages
 
 
-# Source is NOT prebuilt (experimental -- currently doesn't run)...
-%else
-  # I've had issues getting this to build still solidifying
-  cd %{srccodetree}
-  # we don't have root access to /usr/lib/python2.7/site-packages/ (or python3.6)
-  # Need to build everything locally
-  # https://docs.python.org/3/install/index.html#alternate-installation
-  %__python3 setup.py install --user
-  # compile icons for QT
-  mkdir -p gui/qt
-  /usr/bin/pyrcc5 icons.qrc -o gui/qt/icons_rc.py
-  # protobuf-compiler
-  /usr/bin/protoc --proto_path=lib/ --python_out=lib/ lib/paymentrequest.proto
-  # covered in Requires: above
-  #./contrib/make_packages
-  ./contrib/make_locale
-
-# Source is NOT prebuilt (experimental -- currently doesn't run)...
-%else
-  cd %{srccodetree}
-  /usr/bin/pip3 install .[fast] -t ./
-  # ImageMagick conversion of svg's to png's
-  for i in lock unlock confirmed status_lagging status_disconnected status_connected_proxy status_connected status_waiting preferences; do convert -background none icons/$i.svg icons/$i.png; done
-  # protobuf-compiler
-  protoc --proto_path=electrum_dash --python_out=electrum_dash electrum_dash/paymentrequest.proto
-  # python3-requests gettext -- translations
-  ./contrib/make_locale
-  # make the packages
-  ./contrib/make_packages
+####EXPERIMENTAL##### Source is NOT prebuilt (experimental -- currently doesn't run)...
+####EXPERIMENTAL####%else
+####EXPERIMENTAL####  # I've had issues getting this to build still solidifying
+####EXPERIMENTAL####  cd %{srccodetree}
+####EXPERIMENTAL####  # we don't have root access to /usr/lib/python2.7/site-packages/ (or python3.6)
+####EXPERIMENTAL####  # Need to build everything locally
+####EXPERIMENTAL####  # https://docs.python.org/3/install/index.html#alternate-installation
+####EXPERIMENTAL####  %__python3 setup.py install --user
+####EXPERIMENTAL####  # compile icons for QT
+####EXPERIMENTAL####  mkdir -p gui/qt
+####EXPERIMENTAL####  /usr/bin/pyrcc5 icons.qrc -o gui/qt/icons_rc.py
+####EXPERIMENTAL####  # protobuf-compiler
+####EXPERIMENTAL####  /usr/bin/protoc --proto_path=lib/ --python_out=lib/ lib/paymentrequest.proto
+####EXPERIMENTAL####  # covered in Requires: above
+####EXPERIMENTAL####  #./contrib/make_packages
+####EXPERIMENTAL####  ./contrib/make_locale
+####EXPERIMENTAL####
+####EXPERIMENTAL##### Source is NOT prebuilt (experimental -- currently doesn't run)...
+####EXPERIMENTAL####%else
+####EXPERIMENTAL####  cd %{srccodetree}
+####EXPERIMENTAL####  /usr/bin/pip3 install .[fast] -t ./
+####EXPERIMENTAL####  # ImageMagick conversion of svg's to png's
+####EXPERIMENTAL####  for i in lock unlock confirmed status_lagging status_disconnected status_connected_proxy status_connected status_waiting preferences; do convert -background none icons/$i.svg icons/$i.png; done
+####EXPERIMENTAL####  # protobuf-compiler
+####EXPERIMENTAL####  protoc --proto_path=electrum_dash --python_out=electrum_dash electrum_dash/paymentrequest.proto
+####EXPERIMENTAL####  # python3-requests gettext -- translations
+####EXPERIMENTAL####  ./contrib/make_locale
+####EXPERIMENTAL####  # make the packages
+####EXPERIMENTAL####  ./contrib/make_packages
 %endif
 
 
@@ -389,7 +386,7 @@ install -d %{buildroot}%{python3_sitearch}
 
 %if %{sourceIsPrebuilt}
   # XXX Going away soon
-  cp -a %{srccodetree2}/* %{buildroot}%{installtree}/
+  ### cp -a %%{srccodetree2}/* %%{buildroot}%%{installtree}/
 %else
   cp -a %{srccodetree}/* %{buildroot}%{installtree}/
 %endif
@@ -423,8 +420,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.appdata.xml
 
 # Binaries
 install -D -m755 -p %{srccontribtree}/desktop/%{name}-desktop-script.sh %{buildroot}%{installtree}/
-ln -s %{installtree}/%{name} %{buildroot}%{_bindir}/%{name}
 ln -s %{installtree}/%{name1} %{buildroot}%{_bindir}/%{name}
+ln -s %{installtree}/%{name1} %{buildroot}%{_bindir}/%{name1}
+ln -s %{installtree}/%{name}-desktop-script.sh %{buildroot}%{_bindir}/%{name}-desktop-script.sh
 
 ## Special needs
 ## XXX -- may be going away
@@ -447,6 +445,7 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 %{installtree}/*
 
 # Binaries
+%{_bindir}/%{name}-desktop-script.sh
 %{_bindir}/%{name}
 %{_bindir}/%{name1}
 # included via {installtree}/* above
@@ -478,6 +477,7 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 
 
 %changelog
+* Wed Feb 21 2019 Todd Warner <t0dd_at_protonmail.com> 3.2.5-0.2.testing.taw
 * Wed Feb 20 2019 Todd Warner <t0dd_at_protonmail.com> 3.2.5-0.1.testing.taw
   - v3.2.5
 
