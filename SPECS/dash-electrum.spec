@@ -40,9 +40,9 @@ Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 # <name>-<vermajor.<verminor>-<pkgrel>[.<extraver>][.<snapinfo>].DIST[.<minorbump>]
 
 # VERSION
-%define vermajor 3.2
-%define verminor 5
-%define verminor2 1
+%define vermajor 3.3
+%define verminor 4
+%define verminor2 0
 %if %{versionIsFourComponents}
 Version: %{vermajor}.%{verminor}.%{verminor2}
 %else
@@ -129,11 +129,7 @@ Obsoletes: electrum-dash < 3.2.3
 # https://fedoraproject.org/wiki/Packaging:SourceURL
 Source0: https://github.com/akhavr/electrum-dash/archive/%{version}/%{name1}-%{version}.tar.gz
 #Source0: %%{name1}-%%{version}.tar.gz
-%if %{targetIsProduction}
-Source1: https://github.com/taw00/electrum-dash-rpm/blob/master/source/SOURCES/%{name}-%{vermajor}-contrib.tar.gz
-%else
-Source1: https://github.com/taw00/electrum-dash-rpm/blob/master/source/testing/SOURCES/%{name}-%{vermajor}-contrib.tar.gz
-%endif
+Source1: https://github.com/taw00/electrum-dash-rpm/blob/master/SOURCES/%{name}-%{vermajor}-contrib.tar.gz
 %if %{sourceIsPrebuilt}
 Source10: %{name2}-%{version}.tar.gz
 %endif
@@ -186,11 +182,11 @@ BuildRequires: python3-pip python2-pip
 BuildRequires: mesa-libGL-devel python3-Cython
 BuildRequires: gstreamer1-devel SDL2_ttf-devel SDL2_image-devel SDL2_mixer-devel
 BuildRequires: SDL2_image SDL2_mixer SDL2_ttf python3-pygame
-BuildRequires: ImageMagick
+#BuildRequires: ImageMagick
 
 #t0dd: for build environment introspection
 %if ! %{targetIsProduction}
-BuildRequires: tree vim-enhanced less findutils
+BuildRequires: tree vim-enhanced less findutils dnf
 %endif
 
 
@@ -282,48 +278,17 @@ cd ..
   cd %{srccodetree}
   #/usr/bin/pip3 install pip==18.1
   /usr/bin/pip3 install .[fast] -t ./
-  # ImageMagick conversion of svg's to png's
-  for i in lock unlock confirmed status_lagging status_disconnected status_connected_proxy status_connected status_waiting preferences; do convert -background none icons/$i.svg icons/$i.png; done
-  # compile icons for QT
-  mkdir -p gui/qt
-  /usr/bin/pyrcc5 icons.qrc -o gui/qt/icons_rc.py
+  # ImageMagick conversion of svg's to png's -- not needed for versions after 3.2.5?
+  #for i in lock unlock confirmed status_lagging status_disconnected status_connected_proxy status_connected status_waiting preferences; do convert -background none icons/$i.svg icons/$i.png; done
+  # compile icons for QT -- not needed for versions after 3.2.5?
+  #mkdir -p gui/qt
+  #/usr/bin/pyrcc5 icons.qrc -o gui/qt/icons_rc.py
   # protobuf-compiler
   /usr/bin/protoc --proto_path=electrum_dash --python_out=electrum_dash electrum_dash/paymentrequest.proto
   # python3-requests gettext -- translations (OPTIONAL)
   ./contrib/make_locale
-  # make the packages
-  ./contrib/make_packages
-
-
-####EXPERIMENTAL##### Source is NOT prebuilt (experimental -- currently doesn't run)...
-####EXPERIMENTAL####%else
-####EXPERIMENTAL####  # I've had issues getting this to build still solidifying
-####EXPERIMENTAL####  cd %{srccodetree}
-####EXPERIMENTAL####  # we don't have root access to /usr/lib/python2.7/site-packages/ (or python3.6)
-####EXPERIMENTAL####  # Need to build everything locally
-####EXPERIMENTAL####  # https://docs.python.org/3/install/index.html#alternate-installation
-####EXPERIMENTAL####  %__python3 setup.py install --user
-####EXPERIMENTAL####  # compile icons for QT
-####EXPERIMENTAL####  mkdir -p gui/qt
-####EXPERIMENTAL####  /usr/bin/pyrcc5 icons.qrc -o gui/qt/icons_rc.py
-####EXPERIMENTAL####  # protobuf-compiler
-####EXPERIMENTAL####  /usr/bin/protoc --proto_path=lib/ --python_out=lib/ lib/paymentrequest.proto
-####EXPERIMENTAL####  # covered in Requires: above
-####EXPERIMENTAL####  #./contrib/make_packages
-####EXPERIMENTAL####  ./contrib/make_locale
-####EXPERIMENTAL####
-####EXPERIMENTAL##### Source is NOT prebuilt (experimental -- currently doesn't run)...
-####EXPERIMENTAL####%else
-####EXPERIMENTAL####  cd %{srccodetree}
-####EXPERIMENTAL####  /usr/bin/pip3 install .[fast] -t ./
-####EXPERIMENTAL####  # ImageMagick conversion of svg's to png's
-####EXPERIMENTAL####  for i in lock unlock confirmed status_lagging status_disconnected status_connected_proxy status_connected status_waiting preferences; do convert -background none icons/$i.svg icons/$i.png; done
-####EXPERIMENTAL####  # protobuf-compiler
-####EXPERIMENTAL####  protoc --proto_path=electrum_dash --python_out=electrum_dash electrum_dash/paymentrequest.proto
-####EXPERIMENTAL####  # python3-requests gettext -- translations
-####EXPERIMENTAL####  ./contrib/make_locale
-####EXPERIMENTAL####  # make the packages
-####EXPERIMENTAL####  ./contrib/make_packages
+  # make the packages -- not needed for versions after 3.2.5?
+  #./contrib/make_packages
 %endif
 
 
@@ -477,28 +442,33 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 
 
 %changelog
-* Wed Feb 21 2019 Todd Warner <t0dd_at_protonmail.com> 3.2.5-0.2.testing.taw
+* Fri Apr 26 2019 Todd Warner <t0dd_at_protonmail.com> 3.3.4-0.2.testing.taw
+* Fri Apr 26 2019 Todd Warner <t0dd_at_protonmail.com> 3.3.4-0.1.testing.taw
+  - 3.3.4
+  - build section changes
+
+* Thu Feb 21 2019 Todd Warner <t0dd_at_protonmail.com> 3.2.5-0.2.testing.taw
 * Wed Feb 20 2019 Todd Warner <t0dd_at_protonmail.com> 3.2.5-0.1.testing.taw
-  - v3.2.5
+  - 3.2.5
 
 * Thu Jan 17 2019 Todd Warner <t0dd_at_protonmail.com> 3.2.4-0.1.testing.taw
-  - v3.2.4
+  - 3.2.4
 
 * Mon Oct 15 2018 Todd Warner <t0dd_at_protonmail.com> 3.2.3.1-0.1.testing.taw
-  - v3.2.3.1
+  - 3.2.3.1
   - electrum-dash is now dash-electrum via upstream's change to  
     Dash Electrum/Dash-electrum
   - support for Tor proxy  
     https://github.com/akhavr/electrum-dash/releases/tag/3.2.3.1
 
 * Wed Jul 04 2018 Todd Warner <t0dd_at_protonmail.com> 3.2.2.1-0.1.testing.taw
-  - v3.2.2.1
+  - 3.2.2.1
 
 * Wed Jul 04 2018 Todd Warner <t0dd_at_protonmail.com> 3.1.3-0.1.testing.taw
-  - v3.1.3 (back to x.y.z and not x.y.z.zz)
+  - 3.1.3 (back to x.y.z and not x.y.z.zz)
 
 * Thu Jun 21 2018 Todd Warner <t0dd_at_protonmail.com> 3.0.6.3-0.1.testing.taw
-  - v3.0.6.3
+  - 3.0.6.3
   - adjustment to versioning expansion (x.y.z to x.y.z.zz)
   - some spec file tweaks
 
@@ -512,7 +482,7 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
     ~/.config/electrum-dash (versus the upstream default of ~/.electrum-dash
 
 * Sat May 12 2018 Todd Warner <t0dd_at_protonmail.com> 3.0.6-0.1.testing.taw
-  - v3.0.6
+  - 3.0.6
   - python3 and QT5 stuff and turn off automated byte-compiling of python
     since it is so error-prone:  
     https://fedoraproject.org/wiki/Changes/No_more_automagic_Python_bytecompilation  
