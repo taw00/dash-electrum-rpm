@@ -20,11 +20,11 @@
 # "repackage". It's not a blatant repackage, but it is close. Makes for a
 # bloated .src.rpm package, but whatever.
 
-
-Name: dash-electrum
+%define name0 dash-electrum
 %define name1 electrum-dash
 %define name2 Dash-Electrum
 %define name3 Electrum-Dash
+Name: %{name0}
 
 Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 
@@ -41,7 +41,7 @@ Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 
 # VERSION
 %define vermajor 3.3
-%define verminor 4
+%define verminor 8
 %define verminor2 0
 %if %{versionIsFourComponents}
 Version: %{vermajor}.%{verminor}.%{verminor2}
@@ -52,7 +52,7 @@ Version: %{vermajor}.%{verminor}
 # RELEASE
 %define _pkgrel 1
 %if ! %{targetIsProduction}
-  %define _pkgrel 0.2
+  %define _pkgrel 0.1
 %endif
 
 # MINORBUMP
@@ -442,6 +442,12 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 
 
 %changelog
+* Sun Sep 01 2019 Todd Warner <t0dd_at_protonmail.com> 3.3.8-0.1.testing.taw
+  - 3.3.8
+  - F30 version will not build because of a python3-trezor dependence build  
+    failure.  
+    See bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1703628
+
 * Fri Apr 26 2019 Todd Warner <t0dd_at_protonmail.com> 3.3.4-0.2.testing.taw
 * Fri Apr 26 2019 Todd Warner <t0dd_at_protonmail.com> 3.3.4-0.1.testing.taw
   - 3.3.4

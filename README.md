@@ -48,15 +48,6 @@ For feedback or comment: **`t0dd_at_protonmail.com`**
 
 ## Known issues:
 
-* No known significant issues.
-
-Past issues...
-
-* Segfaults on Send > QR Code **--FIXED in v3.0.6 - though doesn't work with my camera**
-* ```"sni-qt/14318" WARN  20:57:02.778 void StatusNotifierItemFactory::connectToSnw() Invalid interface to SNW_SERVICE``` **--FIXED (v3.0.6)**
-* Never seems to mark something as "confirmed" **--FIXED (v3.0.6)**
-* Default directory has permissions 755. Really should be 751. But the wallet
-  is encrypted so... meh. **--FIXED in launched-from-menus version**
-* Default directory is `~/.electrum-dash`. Should really be
-  `~/.config/electrum-dash` **--implemented in launched-from-menus version**
+* F30 version will not build because of a python3-trezor dependence build
+  failure. See bugzilla: <https://bugzilla.redhat.com/show_bug.cgi?id=1703628>
 
