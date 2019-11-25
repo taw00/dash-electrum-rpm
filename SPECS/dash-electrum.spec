@@ -33,7 +33,7 @@ Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 
 # Is the version number 3 or 4 component? x.y.z or x.y.z.zz?
 # Eg. (3) 2.9.4, 3.0.6, 3.1.3 ...or (4) 3.0.6.3
-%define versionIsFourComponents 0
+%define versionIsFourComponents 1
 
 
 # Package (RPM) name-version-release.
@@ -42,7 +42,7 @@ Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 # VERSION
 %define vermajor 3.3
 %define verminor 8
-%define verminor2 0
+%define verminor2 1
 %if %{versionIsFourComponents}
 Version: %{vermajor}.%{verminor}.%{verminor2}
 %else
@@ -442,6 +442,9 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 
 
 %changelog
+* Mon Nov 25 2019 Todd Warner <t0dd_at_protonmail.com> 3.3.8.1-0.1.testing.taw
+  - 3.3.8.1 -- Yes, .1 added for god knows what reason
+
 * Sun Sep 01 2019 Todd Warner <t0dd_at_protonmail.com> 3.3.8-0.1.testing.taw
   - 3.3.8
   - F30 version will not build because of a python3-trezor dependence build  
