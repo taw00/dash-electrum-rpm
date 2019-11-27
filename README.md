@@ -48,6 +48,5 @@ For feedback or comment: **`t0dd_at_protonmail.com`**
 
 ## Known issues:
 
-* F30 version will not build because of a python3-trezor dependence build
-  failure. See bugzilla: <https://bugzilla.redhat.com/show_bug.cgi?id=1703628>
+* None at this time.
 
