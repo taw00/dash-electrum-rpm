@@ -42,7 +42,7 @@ Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 # VERSION
 %define vermajor 3.3
 %define verminor 8
-%define verminor2 1
+%define verminor2 2
 %if %{versionIsFourComponents}
 Version: %{vermajor}.%{verminor}.%{verminor2}
 %else
@@ -442,6 +442,9 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 
 
 %changelog
+* Mon Dec 9 2019 Todd Warner <t0dd_at_protonmail.com> 3.3.8.2-0.1.testing.taw
+  - 3.3.8.2 -- Yes, .2 added for god knows what reason
+
 * Mon Nov 25 2019 Todd Warner <t0dd_at_protonmail.com> 3.3.8.1-0.1.testing.taw
   - 3.3.8.1 -- Yes, .1 added for god knows what reason
 
