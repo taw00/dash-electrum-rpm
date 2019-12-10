@@ -52,7 +52,7 @@ Version: %{vermajor}.%{verminor}
 # RELEASE
 %define _pkgrel 1
 %if ! %{targetIsProduction}
-  %define _pkgrel 0.1
+  %define _pkgrel 1.1
 %endif
 
 # MINORBUMP
@@ -358,22 +358,22 @@ install -d %{buildroot}%{python3_sitearch}
 
 # Desktop
 install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.128.png %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.16.png   %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.22.png   %{buildroot}%{_datadir}/icons/hicolor/22x22/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.24.png   %{buildroot}%{_datadir}/icons/hicolor/24x24/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.16.png  %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.22.png  %{buildroot}%{_datadir}/icons/hicolor/22x22/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.24.png  %{buildroot}%{_datadir}/icons/hicolor/24x24/apps/%{name}.png
 install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.256.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.32.png   %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.48.png   %{buildroot}%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.svg         %{buildroot}%{_datadir}/icons/hicolor/48x48/apps/%{name}.svg
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.32.png  %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.48.png  %{buildroot}%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.svg     %{buildroot}%{_datadir}/icons/hicolor/48x48/apps/%{name}.svg
 
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.128.png %{buildroot}%{_datadir}/icons/highcontrast/128x128/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.16.png   %{buildroot}%{_datadir}/icons/highcontrast/16x16/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.22.png   %{buildroot}%{_datadir}/icons/highcontrast/22x22/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.24.png   %{buildroot}%{_datadir}/icons/highcontrast/24x24/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.256.png %{buildroot}%{_datadir}/icons/highcontrast/256x256/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.32.png   %{buildroot}%{_datadir}/icons/highcontrast/32x32/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.48.png   %{buildroot}%{_datadir}/icons/highcontrast/48x48/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.svg         %{buildroot}%{_datadir}/icons/highcontrast/48x48/apps/%{name}.svg
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.128.png %{buildroot}%{_datadir}/icons/HighContrast/128x128/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.16.png  %{buildroot}%{_datadir}/icons/HighContrast/16x16/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.22.png  %{buildroot}%{_datadir}/icons/HighContrast/22x22/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.24.png  %{buildroot}%{_datadir}/icons/HighContrast/24x24/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.256.png %{buildroot}%{_datadir}/icons/HighContrast/256x256/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.32.png  %{buildroot}%{_datadir}/icons/HighContrast/32x32/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.48.png  %{buildroot}%{_datadir}/icons/HighContrast/48x48/apps/%{name}.png
+install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.svg     %{buildroot}%{_datadir}/icons/HighContrast/48x48/apps/%{name}.svg
 
 # dash-electrum.desktop
 desktop-file-install --dir=%{buildroot}%{_datadir}/applications/ %{srccontribtree}/desktop/%{name}.desktop
@@ -417,9 +417,25 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 #%%{installtree}/%%{name}-desktop-script.sh
 
 # Desktop
-%{_datadir}/icons/*
 %{_datadir}/applications/%{name}.desktop
 %{_metainfodir}/%{name}.appdata.xml
+# Desktop icons
+%{_datadir}/icons/hicolor/128x128/apps/%{name}.pn
+%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
+%{_datadir}/icons/hicolor/22x22/apps/%{name}.png
+%{_datadir}/icons/hicolor/24x24/apps/%{name}.png
+%{_datadir}/icons/hicolor/256x256/apps/%{name}.pn
+%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
+%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
+%{_datadir}/icons/hicolor/48x48/apps/%{name}.svg
+%{_datadir}/icons/HighContrast/128x128/apps/%{name}.png
+%{_datadir}/icons/HighContrast/16x16/apps/%{name}.png
+%{_datadir}/icons/HighContrast/22x22/apps/%{name}.png
+%{_datadir}/icons/HighContrast/24x24/apps/%{name}.png
+%{_datadir}/icons/HighContrast/256x256/apps/%{name}.png
+%{_datadir}/icons/HighContrast/32x32/apps/%{name}.png
+%{_datadir}/icons/HighContrast/48x48/apps/%{name}.png
+%{_datadir}/icons/HighContrast/48x48/apps/%{name}.svg
 
 # Special needs
 # XXX may be going away soon
@@ -442,8 +458,10 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 
 
 %changelog
+* Mon Dec 9 2019 Todd Warner <t0dd_at_protonmail.com> 3.3.8.2-1.1.testing.taw
 * Mon Dec 9 2019 Todd Warner <t0dd_at_protonmail.com> 3.3.8.2-0.1.testing.taw
   - 3.3.8.2 -- Yes, .2 added for god knows what reason
+  - release 1.1.testing -- fixing incorrect desktop icon placement
 
 * Mon Nov 25 2019 Todd Warner <t0dd_at_protonmail.com> 3.3.8.1-0.1.testing.taw
   - 3.3.8.1 -- Yes, .1 added for god knows what reason
