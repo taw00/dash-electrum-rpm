@@ -13,12 +13,6 @@
 # Upstream now refers to this application as Dash Electrum (and Dash-Electrum),
 # though the source code is still exported as electrum-dash-*.tar.gz
 #
-# Note that we have a flag '%sourceIsPrebuilt' that chooses one of two methods
-# to "build" this application. If flipped off, it will attempt to build the
-# whole stack. If flipped on, we build from a semi-prebuilt version of Dash
-# Electrum. The release will have an "rp" attached to it which stands for
-# "repackage". It's not a blatant repackage, but it is close. Makes for a
-# bloated .src.rpm package, but whatever.
 
 %define name0 dash-electrum
 %define name1 electrum-dash
@@ -42,7 +36,7 @@ Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 # VERSION
 %define vermajor 3.3
 %define verminor 8
-%define verminor2 2
+%define verminor2 4
 %if %{versionIsFourComponents}
 Version: %{vermajor}.%{verminor}.%{verminor2}
 %else
@@ -52,7 +46,7 @@ Version: %{vermajor}.%{verminor}
 # RELEASE
 %define _pkgrel 1
 %if ! %{targetIsProduction}
-  %define _pkgrel 1.1
+  %define _pkgrel 0.1
 %endif
 
 # MINORBUMP
@@ -176,7 +170,7 @@ BuildRequires: python3-trezor python3-libusb1
 # additional requires from ./contrib/requirements.txt
 BuildRequires: python3-certifi python3-chardet python3-idna python3-pysocks
 # /usr/bin/pip3 and /usr/bin/pip
-BuildRequires: python3-pip python2-pip
+BuildRequires: python3-pip
 # For Kivy? Fedora doesn't ship python3-kivy unfortunately
 # Same as above: python3-devel git
 BuildRequires: mesa-libGL-devel python3-Cython
@@ -330,29 +324,11 @@ install -d %{buildroot}%{_datadir}/applications
 install -d %{buildroot}%{_sysconfdir}/ld.so.conf.d
 # /usr/share/electrum-dash/
 install -d %{buildroot}%{installtree}
-## XXX might be going away
-## /usr/lib/python2.7/site-packages/ (python2) or /usr/lib/python3.6/site-packages/ (python3)
-#%%define _site_packages2 %%(%%__python2 -c "import site; print(site.getsitepackages()[0])")
-#install -d %%{buildroot}%%{_site_packages2}
+
 %define _site_packages3 %(%__python3 -c "import site; print(site.getsitepackages()[0])")
 install -d %{buildroot}%{python3_sitearch}
 
-# XXX -- experimental and holdover stuff from 2.9.4 -todd
-# /usr/[lib,lib64]/dash-electrum/
-#install -d %%{buildroot}%%{_libdir}/%%{name}
-# /etc/electrum-dash/
-#install -d %%{buildroot}%%{_sysconfdir}/%%{name}
-# /var/lib/electrum-dash/...
-#install -d %%{buildroot}%%{_sharedstatedir}/%%{name}
-# /var/log/electrum-dash/
-#install -d -m750 %%{buildroot}%%{_localstatedir}/log/%%{name}
-# Binaries
-#install -D -p %%{srccodetree}/%%{name}-process.sh %%{buildroot}%%{installtree}/%%{name}-process.sh
-
-%if %{sourceIsPrebuilt}
-  # XXX Going away soon
-  ### cp -a %%{srccodetree2}/* %%{buildroot}%%{installtree}/
-%else
+%if ! %{sourceIsPrebuilt}
   cp -a %{srccodetree}/* %{buildroot}%{installtree}/
 %endif
 
@@ -458,6 +434,9 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 
 
 %changelog
+* Sun Apr 19 2020 Todd Warner <t0dd_at_protonmail.com> 3.3.8.4-0.1.testing.taw
+  - 3.3.8.4
+
 * Mon Dec 9 2019 Todd Warner <t0dd_at_protonmail.com> 3.3.8.2-1.1.testing.taw
 * Mon Dec 9 2019 Todd Warner <t0dd_at_protonmail.com> 3.3.8.2-0.1.testing.taw
   - 3.3.8.2 -- Yes, .2 added for god knows what reason
