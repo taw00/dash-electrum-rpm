@@ -36,7 +36,7 @@ Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 # VERSION
 %define vermajor 3.3
 %define verminor 8
-%define verminor2 4
+%define verminor2 5
 %if %{versionIsFourComponents}
 Version: %{vermajor}.%{verminor}.%{verminor2}
 %else
@@ -177,6 +177,8 @@ BuildRequires: mesa-libGL-devel python3-Cython
 BuildRequires: gstreamer1-devel SDL2_ttf-devel SDL2_image-devel SDL2_mixer-devel
 BuildRequires: SDL2_image SDL2_mixer SDL2_ttf python3-pygame
 #BuildRequires: ImageMagick
+# For gmp.h
+BuildRequires: gmp-devel
 
 #t0dd: for build environment introspection
 %if ! %{targetIsProduction}
@@ -434,8 +436,14 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 
 
 %changelog
+* Thu May 21 2020 Todd Warner <t0dd_at_protonmail.com> 3.3.8.5-0.1.testing.taw
+  - 3.3.8.5 testing
+  - For Fedora 32, we had to explicitely BuildRequires: gmp-devel
+  - Fedora 32 builds see an error, but _seems_ to build correctly otherwise.  
+    The error: ERROR: requests 2.22.0 has requirement idna<2.9,>=2.5, but you'll have idna 2.9 which is incompatible.
+
 * Sun Apr 19 2020 Todd Warner <t0dd_at_protonmail.com> 3.3.8.4-0.1.testing.taw
-  - 3.3.8.4
+  - 3.3.8.4 testing
 
 * Mon Dec 9 2019 Todd Warner <t0dd_at_protonmail.com> 3.3.8.2-1.1.testing.taw
 * Mon Dec 9 2019 Todd Warner <t0dd_at_protonmail.com> 3.3.8.2-0.1.testing.taw
