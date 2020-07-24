@@ -6,21 +6,16 @@
 #
 # Name confusion: Note that application is sometimes referred to as "Electrum
 # Dash" and other times as "Dash Electrum". We will use "Dash Electrum"
-# when referring to it formally. And the the executable will be in both
-# orderings.
-#
-# UPDATE (2018-10-14):
-# Upstream now refers to this application as Dash Electrum (and Dash-Electrum),
-# though the source code is still exported as electrum-dash-*.tar.gz
-#
+# when referring to it formally.
 
-%define name0 dash-electrum
+Name: dash-electrum
+Summary: An easy-to-use Dash cryptocurrency light client for the desktop
+
+%define appid org.dash.electrum.dash_electrum
+
+%define name0 %{name}
 %define name1 electrum-dash
 %define name2 Dash-Electrum
-%define name3 Electrum-Dash
-Name: %{name0}
-
-Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 
 %define targetIsProduction 0
 %define sourceIsPrebuilt 0
@@ -36,7 +31,7 @@ Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 # VERSION
 %define vermajor 3.3
 %define verminor 8
-%define verminor2 5
+%define verminor2 6
 %if %{versionIsFourComponents}
 Version: %{vermajor}.%{verminor}.%{verminor2}
 %else
@@ -46,7 +41,7 @@ Version: %{vermajor}.%{verminor}
 # RELEASE
 %define _pkgrel 1
 %if ! %{targetIsProduction}
-  %define _pkgrel 0.1
+  %define _pkgrel 0.2
 %endif
 
 # MINORBUMP
@@ -121,9 +116,9 @@ Obsoletes: electrum-dash < 3.2.3
 
 # You can/should use URLs for sources.
 # https://fedoraproject.org/wiki/Packaging:SourceURL
-Source0: https://github.com/akhavr/electrum-dash/archive/%{version}/%{name1}-%{version}.tar.gz
+Source0: https://raw.githubusercontent.com/akhavr/electrum-dash/archive/%{version}/%{name1}-%{version}.tar.gz
 #Source0: %%{name1}-%%{version}.tar.gz
-Source1: https://github.com/taw00/electrum-dash-rpm/blob/master/SOURCES/%{name}-%{vermajor}-contrib.tar.gz
+Source1: https://raw.githubusercontent.com/taw00/dash-electrum-rpm/master/SOURCES/%{name}-%{vermajor}-contrib.tar.gz
 %if %{sourceIsPrebuilt}
 Source10: %{name2}-%{version}.tar.gz
 %endif
@@ -152,7 +147,7 @@ Requires: mtdev python3-pillow python3-pygame
 # Note, this is going away as an advised path.
 %global __python %{__python3}
 
-# Required for desktop applications (validation of .desktop and .xml files)
+# Required for desktop applications (validation of .desktop and .metainfo.xml files)
 BuildRequires: desktop-file-utils libappstream-glib
 
 # may not need git
@@ -187,7 +182,7 @@ BuildRequires: tree vim-enhanced less findutils dnf
 
 
 License: MIT
-URL: https://github.com/taw00/electrum-dash-rpm
+URL: https://github.com/taw00/dash-electrum-rpm
 ExclusiveArch: x86_64 i686 i386
 
 # Extracted source tree structure (extracted in .../BUILD)
@@ -200,7 +195,7 @@ ExclusiveArch: x86_64 i686 i386
 #%%define srccodetree2 %%{name2}-%%{version}
 %define srccontribtree %{name}-%{vermajor}-contrib
 # /usr/share/dash-electrum
-%define installtree %{_datadir}/%{name}
+%define installtree %{_datadir}/%{appid}
 
 
 %description
@@ -247,11 +242,7 @@ cd .. ; /usr/bin/tree -df -L 1 %{srcroot} ; cd -
 
 
 %build
-# an rpm creation step (right prior to %%install step)
 # This section starts us in directory {_builddir}/{srcroot}
-
-## Man Pages - not used as of yet
-#gzip %%{buildroot}%%{_mandir}/man1/*.1
 
 cd %{srccontribtree}
 ####/usr/bin/pip3 install kivy --user
@@ -285,8 +276,10 @@ cd ..
   ./contrib/make_locale
   # make the packages -- not needed for versions after 3.2.5?
   #./contrib/make_packages
-%endif
 
+  # No longer electrum-dash, it's dash-electrum
+  mv %{name1} %{name}
+%endif
 
 %install
 # an rpm creation step (right prior to %%files step)
@@ -335,37 +328,30 @@ install -d %{buildroot}%{python3_sitearch}
 %endif
 
 # Desktop
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.128.png %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.16.png  %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.22.png  %{buildroot}%{_datadir}/icons/hicolor/22x22/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.24.png  %{buildroot}%{_datadir}/icons/hicolor/24x24/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.256.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.32.png  %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.48.png  %{buildroot}%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.hicolor.svg     %{buildroot}%{_datadir}/icons/hicolor/48x48/apps/%{name}.svg
+install -D -m644 -p %{srccontribtree}/desktop/hicolor-128-%{appid}.png  %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{appid}.png
+install -D -m644 -p %{srccontribtree}/desktop/hicolor-256-%{appid}.png  %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/%{appid}.png
+install -D -m644 -p %{srccontribtree}/desktop/hicolor-512-%{appid}.png  %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/%{appid}.png
+install -D -m644 -p  %{srccontribtree}/desktop/hicolor-64-%{appid}.png    %{buildroot}%{_datadir}/icons/hicolor/64x64/apps/%{appid}.png
+install -D -m644 -p     %{srccontribtree}/desktop/hicolor-scalable-%{appid}.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/%{appid}.svg
 
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.128.png %{buildroot}%{_datadir}/icons/HighContrast/128x128/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.16.png  %{buildroot}%{_datadir}/icons/HighContrast/16x16/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.22.png  %{buildroot}%{_datadir}/icons/HighContrast/22x22/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.24.png  %{buildroot}%{_datadir}/icons/HighContrast/24x24/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.256.png %{buildroot}%{_datadir}/icons/HighContrast/256x256/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.32.png  %{buildroot}%{_datadir}/icons/HighContrast/32x32/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.48.png  %{buildroot}%{_datadir}/icons/HighContrast/48x48/apps/%{name}.png
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.highcontrast.svg     %{buildroot}%{_datadir}/icons/HighContrast/48x48/apps/%{name}.svg
+install -D -m644 -p %{srccontribtree}/desktop/highcontrast-128-%{appid}.png  %{buildroot}%{_datadir}/icons/HighContrast/128x128/apps/%{appid}.png
+install -D -m644 -p %{srccontribtree}/desktop/highcontrast-256-%{appid}.png  %{buildroot}%{_datadir}/icons/HighContrast/256x256/apps/%{appid}.png
+install -D -m644 -p %{srccontribtree}/desktop/highcontrast-512-%{appid}.png  %{buildroot}%{_datadir}/icons/HighContrast/512x512/apps/%{appid}.png
+install -D -m644 -p  %{srccontribtree}/desktop/highcontrast-64-%{appid}.png    %{buildroot}%{_datadir}/icons/HighContrast/64x64/apps/%{appid}.png
+install -D -m644 -p     %{srccontribtree}/desktop/highcontrast-scalable-%{appid}.svg %{buildroot}%{_datadir}/icons/HighContrast/scalable/apps/%{appid}.svg
 
-# dash-electrum.desktop
-desktop-file-install --dir=%{buildroot}%{_datadir}/applications/ %{srccontribtree}/desktop/%{name}.desktop
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+# org.dash.electrum.dash_electrum.desktop
+desktop-file-install --dir=%{buildroot}%{_datadir}/applications/ %{srccontribtree}/desktop/%{appid}.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{appid}.desktop
 
-# dash-electrum.appdata.xml
-install -D -m644 -p %{srccontribtree}/desktop/%{name}.appdata.xml %{buildroot}%{_metainfodir}/%{name}.appdata.xml
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.appdata.xml
+# org.dash.electrum.dash_electrum.metainfo.xml
+install -D -m644 -p %{srccontribtree}/desktop/%{appid}.metainfo.xml %{buildroot}%{_metainfodir}/%{appid}.metainfo.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.metainfo.xml
 
 # Binaries
-install -D -m755 -p %{srccontribtree}/desktop/%{name}-desktop-script.sh %{buildroot}%{installtree}/
-ln -s %{installtree}/%{name1} %{buildroot}%{_bindir}/%{name}
-ln -s %{installtree}/%{name1} %{buildroot}%{_bindir}/%{name1}
-ln -s %{installtree}/%{name}-desktop-script.sh %{buildroot}%{_bindir}/%{name}-desktop-script.sh
+install -D -m755 -p %{srccontribtree}/desktop/%{name}.wrapper.sh %{buildroot}%{installtree}/
+ln -s %{installtree}/%{name} %{buildroot}%{installtree}/%{name1}
+ln -s %{installtree}/%{name}.wrapper.sh %{buildroot}%{_bindir}/%{name}
 
 ## Special needs
 ## XXX -- may be going away
@@ -375,45 +361,29 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 
 
 %files
-# an rpm creation step
 # This section starts us in directory {_buildrootdir}
-# (note, macros like %%docs, etc may locate in {_builddir}
 %defattr(-,root,root,-)
 %license %{srccontribtree}/LICENSE
 
-# The directories...
-# /usr/share/electrum-dash/
 %dir %{installtree}
-
 %{installtree}/*
-
-# Binaries
-%{_bindir}/%{name}-desktop-script.sh
 %{_bindir}/%{name}
-%{_bindir}/%{name1}
-# included via {installtree}/* above
-#%%{installtree}/%%{name}-desktop-script.sh
 
 # Desktop
-%{_datadir}/applications/%{name}.desktop
-%{_metainfodir}/%{name}.appdata.xml
+%{_datadir}/applications/%{appid}.desktop
+%{_metainfodir}/%{appid}.metainfo.xml
+
 # Desktop icons
-%{_datadir}/icons/hicolor/128x128/apps/%{name}.png
-%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
-%{_datadir}/icons/hicolor/22x22/apps/%{name}.png
-%{_datadir}/icons/hicolor/24x24/apps/%{name}.png
-%{_datadir}/icons/hicolor/256x256/apps/%{name}.png
-%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
-%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
-%{_datadir}/icons/hicolor/48x48/apps/%{name}.svg
-%{_datadir}/icons/HighContrast/128x128/apps/%{name}.png
-%{_datadir}/icons/HighContrast/16x16/apps/%{name}.png
-%{_datadir}/icons/HighContrast/22x22/apps/%{name}.png
-%{_datadir}/icons/HighContrast/24x24/apps/%{name}.png
-%{_datadir}/icons/HighContrast/256x256/apps/%{name}.png
-%{_datadir}/icons/HighContrast/32x32/apps/%{name}.png
-%{_datadir}/icons/HighContrast/48x48/apps/%{name}.png
-%{_datadir}/icons/HighContrast/48x48/apps/%{name}.svg
+   %{_datadir}/icons/hicolor/64x64/apps/%{appid}.png
+ %{_datadir}/icons/hicolor/128x128/apps/%{appid}.png
+ %{_datadir}/icons/hicolor/256x256/apps/%{appid}.png
+ %{_datadir}/icons/hicolor/512x512/apps/%{appid}.png
+%{_datadir}/icons/hicolor/scalable/apps/%{appid}.svg
+   %{_datadir}/icons/HighContrast/64x64/apps/%{appid}.png
+ %{_datadir}/icons/HighContrast/128x128/apps/%{appid}.png
+ %{_datadir}/icons/HighContrast/256x256/apps/%{appid}.png
+ %{_datadir}/icons/HighContrast/512x512/apps/%{appid}.png
+%{_datadir}/icons/HighContrast/scalable/apps/%{appid}.svg
 
 # Special needs
 # XXX may be going away soon
@@ -436,6 +406,20 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 
 
 %changelog
+* Fri Jul 24 2020 Todd Warner <t0dd_at_protonmail.com> 3.3.8.6-0.2.testing.taw
+  - fix directory query logic if executable is run from non-HOME directory
+
+* Fri Jul 24 2020 Todd Warner <t0dd_at_protonmail.com> 3.3.8.6-0.1.testing.taw
+  - 3.3.8.6 testing - https://github.com/akhavr/electrum-dash/releases/tag/3.3.8.6
+  - .desktop and .metainfo.xml and icons and application path adhere better to  
+     the appstream standards
+  - appid is org.dash.electrum.dash_electrum
+  - SVG icons were misconfigured - fixed
+  - reduced icons down to the core sizes expected (64, 128, 256, 512)
+  - only user visible executable is /usr/bin/dash-electrum
+  - Added desktop action "testnet" and keywords to .desktop file
+  - added mimetype (probably wrong) to .desktop and .metainfo.xml files
+
 * Thu May 21 2020 Todd Warner <t0dd_at_protonmail.com> 3.3.8.5-0.1.testing.taw
   - 3.3.8.5 testing
   - For Fedora 32, we had to explicitely BuildRequires: gmp-devel

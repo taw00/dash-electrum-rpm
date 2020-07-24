@@ -1,0 +1,20 @@
+[Desktop Entry]
+Name=Dash Electrum
+Comment=Lightweight Dash Client
+GenericName=Cryptocurrency Wallet
+Categories=Office;Finance;X-Cryptocurrency;X-Dash
+Exec=/usr/share/org.dash.electrum.dash_electrum/dash-electrum.wrapper.sh
+Icon=org.dash.electrum.dash_electrum
+StartupNotify=false
+Terminal=false
+Type=Application
+Name[en_US]=Dash Electrum
+GenericName[en_US]=Cryptocurrency Wallet
+Actions=testnet
+Keywords=cryptocurrency;bitcoin;dash;wallet;
+MimeType=x-scheme-handler/dash;
+
+[Desktop Action testnet]
+Exec=/usr/share/org.dash.electrum.dash_electrum/dash-electrum.wrapper.sh testnet
+Name=Testnet mode
+
