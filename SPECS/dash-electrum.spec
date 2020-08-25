@@ -4,9 +4,9 @@
 # This SPEC file with appropriate source archives will build and install
 # Dash Electrum Light Wallet.
 #
-# Name confusion: Note that application is sometimes referred to as "Electrum
-# Dash" and other times as "Dash Electrum". We will use "Dash Electrum"
-# when referring to it formally.
+# Name confusion: Note that the application is sometimes referred to as
+# "Electrum Dash" and other times as "Dash Electrum". We will use "Dash
+# Electrum" when referring to it formally.
 
 Name: dash-electrum
 Summary: An easy-to-use Dash cryptocurrency light client for the desktop
@@ -20,8 +20,8 @@ Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 %define targetIsProduction 0
 %define sourceIsPrebuilt 0
 
-# Is the version number 3 or 4 component? x.y.z or x.y.z.zz?
-# Eg. (3) 2.9.4, 3.0.6, 3.1.3 ...or (4) 3.0.6.3
+# Is the version number 3 or 4 components — x.y.z or x.y.z.zz?
+# Eg. (3) 3.3.6 ...or... (4) 3.3.8.7
 %define versionIsFourComponents 1
 
 
@@ -31,7 +31,7 @@ Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 # VERSION
 %define vermajor 3.3
 %define verminor 8
-%define verminor2 6
+%define verminor2 7
 %if %{versionIsFourComponents}
 Version: %{vermajor}.%{verminor}.%{verminor2}
 %else
@@ -41,7 +41,7 @@ Version: %{vermajor}.%{verminor}
 # RELEASE
 %define _pkgrel 1
 %if ! %{targetIsProduction}
-  %define _pkgrel 0.2
+  %define _pkgrel 0.1
 %endif
 
 # MINORBUMP
@@ -194,7 +194,7 @@ ExclusiveArch: x86_64 i686 i386
 %define srccodetree %{name1}-%{version}
 #%%define srccodetree2 %%{name2}-%%{version}
 %define srccontribtree %{name}-%{vermajor}-contrib
-# /usr/share/dash-electrum
+# /usr/share/org.dash.electrum.dash_electrum
 %define installtree %{_datadir}/%{appid}
 
 
@@ -406,6 +406,9 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 
 
 %changelog
+* Tue Aug 25 2020 Todd Warner <t0dd_at_protonmail.com> 3.3.8.7-0.1.testing.taw
+  - 3.3.8.7 testing - https://github.com/akhavr/electrum-dash/releases/tag/3.3.8.7
+
 * Fri Jul 24 2020 Todd Warner <t0dd_at_protonmail.com> 3.3.8.6-0.2.testing.taw
   - fix directory query logic if executable is run from non-HOME directory
 
