@@ -31,7 +31,7 @@ Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 # VERSION
 %define vermajor 4.0
 %define verminor 4
-%define verminor2 0rc6
+%define verminor2 1
 %if %{versionIsFourComponents}
 Version: %{vermajor}.%{verminor}.%{verminor2}
 %else
@@ -41,7 +41,7 @@ Version: %{vermajor}.%{verminor}
 # RELEASE
 %define _pkgrel 1
 %if ! %{targetIsProduction}
-  %define _pkgrel 0.1
+  %define _pkgrel 0.2
 %endif
 
 # MINORBUMP
@@ -174,6 +174,8 @@ BuildRequires: SDL2_image SDL2_mixer SDL2_ttf python3-pygame
 #BuildRequires: ImageMagick
 # For gmp.h
 BuildRequires: gmp-devel
+# For libsecp256k1
+BuildRequires: automake libtool
 
 #t0dd: for build environment introspection
 %if ! %{targetIsProduction}
@@ -274,6 +276,11 @@ cd ..
   /usr/bin/protoc --proto_path=electrum_dash --python_out=electrum_dash electrum_dash/paymentrequest.proto
   # python3-requests gettext -- translations (OPTIONAL)
   ./contrib/make_locale
+
+  # remove the host_strip call from this shell script. It is an unknown command and isn't relevant for the build anyway.
+  sed -i '/host_strip/d' ./contrib/make_libsecp256k1.sh
+  ./contrib/make_libsecp256k1.sh
+
   # make the packages -- not needed for versions after 3.2.5?
   #./contrib/make_packages
 
@@ -406,6 +413,12 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 
 
 %changelog
+* Sun Dec 11 2020 Todd Warner <t0dd_at_protonmail.com> 4.0.4.1-0.2.testing.taw
+  - Fix missing libsecp256k1.so.0
+
+* Sun Dec 11 2020 Todd Warner <t0dd_at_protonmail.com> 4.0.4.1-0.1.testing.taw
+  - 4.0.4.1 testing - https://github.com/akhavr/electrum-dash/releases/tag/4.0.4.1
+
 * Mon Dec 07 2020 Todd Warner <t0dd_at_protonmail.com> 4.0.4.0rc6-0.1.testing.taw
   - 4.0.4.0rc6 testing - https://github.com/akhavr/electrum-dash/releases/tag/4.0.4.0rc6
 
