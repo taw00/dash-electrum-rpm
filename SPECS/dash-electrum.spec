@@ -31,7 +31,7 @@ Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 # VERSION
 %define vermajor 4.0
 %define verminor 9
-%define verminor2 3
+%define verminor2 4
 %if %{versionIsFourComponents}
 Version: %{vermajor}.%{verminor}.%{verminor2}
 %else
@@ -413,8 +413,11 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 
 
 %changelog
-* Fri Feb 25 2021 Todd Warner <t0dd_at_protonmail.com> 4.0.9.3-0.1.testing.taw
-  - https://github.com/akhavr/electrum-dash/releases/tag/4.0.9.1
+* Sat Apr 10 2021 Todd Warner <t0dd_at_protonmail.com> 4.0.9.4-0.1.testing.taw
+  - https://github.com/akhavr/electrum-dash/releases/tag/4.0.9.4
+
+* Thu Feb 25 2021 Todd Warner <t0dd_at_protonmail.com> 4.0.9.3-0.1.testing.taw
+  - https://github.com/akhavr/electrum-dash/releases/tag/4.0.9.3
 
 * Fri Jan 22 2021 Todd Warner <t0dd_at_protonmail.com> 4.0.9.1-0.1.testing.taw
   - 4.0.9.1 testing - https://github.com/akhavr/electrum-dash/releases/tag/4.0.9.1
@@ -422,10 +425,10 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 * Fri Jan 8 2021 Todd Warner <t0dd_at_protonmail.com> 4.0.9.0-0.1.testing.taw
   - 4.0.9.0 testing - https://github.com/akhavr/electrum-dash/releases/tag/4.0.9.0
 
-* Sun Dec 11 2020 Todd Warner <t0dd_at_protonmail.com> 4.0.4.1-0.2.testing.taw
+* Fri Dec 11 2020 Todd Warner <t0dd_at_protonmail.com> 4.0.4.1-0.2.testing.taw
   - Fix missing libsecp256k1.so.0
 
-* Sun Dec 11 2020 Todd Warner <t0dd_at_protonmail.com> 4.0.4.1-0.1.testing.taw
+* Fri Dec 11 2020 Todd Warner <t0dd_at_protonmail.com> 4.0.4.1-0.1.testing.taw
   - 4.0.4.1 testing - https://github.com/akhavr/electrum-dash/releases/tag/4.0.4.1
 
 * Mon Dec 07 2020 Todd Warner <t0dd_at_protonmail.com> 4.0.4.0rc6-0.1.testing.taw
