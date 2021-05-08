@@ -29,9 +29,9 @@ Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 # <name>-<vermajor.<verminor>-<pkgrel>[.<extraver>][.<snapinfo>].DIST[.<minorbump>]
 
 # VERSION
-%define vermajor 4.0
-%define verminor 9
-%define verminor2 4
+%define vermajor 4.1
+%define verminor 2
+%define verminor2 0
 %if %{versionIsFourComponents}
 Version: %{vermajor}.%{verminor}.%{verminor2}
 %else
@@ -413,6 +413,9 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 
 
 %changelog
+* Sat May 8 2021 Todd Warner <t0dd_at_protonmail.com> 4.1.2.0-0.1.testing.taw
+  - https://github.com/akhavr/electrum-dash/releases/tag/4.1.2.0
+
 * Sat Apr 10 2021 Todd Warner <t0dd_at_protonmail.com> 4.0.9.4-0.1.testing.taw
   - https://github.com/akhavr/electrum-dash/releases/tag/4.0.9.4
 
