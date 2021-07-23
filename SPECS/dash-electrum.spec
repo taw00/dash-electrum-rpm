@@ -293,8 +293,10 @@ cd ..
 # This section starts us in directory {_builddir}/{srcroot}
 #
 # Cheatsheet for built-in RPM macros:
-#   _builddir = /.../BUILD
-#   buildroot = /.../BUILDROOT
+# https://docs.fedoraproject.org/en-US/packaging-guidelines/RPMMacros/
+#   _builddir = {_topdir}/BUILD
+#   _buildrootdir = {_topdir}/BUILDROOT
+#   buildroot = {_buildrootdir}/{name}-{version}-{release}.{_arch}
 #   _bindir = /usr/bin
 #   _sbindir = /usr/sbin
 #   _datadir = /usr/share
@@ -302,17 +304,16 @@ cd ..
 #   _sysconfdir = /etc
 #   _localstatedir = /var
 #   _sharedstatedir is /var/lib
-#   _prefix = /usr
+#   _prefix or _usr = /usr
 #   _libdir = /usr/lib or /usr/lib64 (depending on system)
-#   https://fedoraproject.org/wiki/Packaging:RPMMacros
-# This is used to quiet rpmlint who can't seem to understand that /usr/lib is
-# still used for certain things.
+# The _rawlib define is used to quiet rpmlint who can't seem to understand
+# that /usr/lib is still used for certain things.
 %define _rawlib lib
 %define _usr_lib /usr/%{_rawlib}
-# These three are already defined in newer versions of RPM, but not in el7
+%define _unitdir %{_usr_lib}/systemd/system
+# These two are already defined in newer versions of RPM, but not in el7
 %if 0%{?rhel} && 0%{?rhel} < 8
   %define _tmpfilesdir %{_usr_lib}/tmpfiles.d
-  %define _unitdir %{_usr_lib}/systemd/system
   %define _metainfodir %{_datadir}/metainfo
 %endif
 
