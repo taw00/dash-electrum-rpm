@@ -194,7 +194,7 @@ ExclusiveArch: x86_64 i686 i386
 #      \_srccontribtree     \_{name}-1.0-contrib
 %define srcroot %{name}-%{vermajor}
 %define srccodetree %{name1}-%{version}
-#%%define srccodetree2 %%{name2}-%%{version}
+%define srccodetree2 %{name2}-%{version}
 %define srccontribtree %{name}-%{vermajor}-contrib
 # /usr/share/org.dash.electrum.dash_electrum
 %define installtree %{_datadir}/%{appid}
@@ -204,6 +204,7 @@ ExclusiveArch: x86_64 i686 i386
 Dash Electrum is a fully featured cryptocurrency light wallet for the desktop.
 The Dash Crytocurrency is a revolutionary digital money system. Instant,
 private, and secure.
+
 
 %prep
 # an rpm creation step (right prior to %%build step)
@@ -233,10 +234,24 @@ mkdir -p %{srcroot}
 # Libraries ldconfig file - we create it, because lib or lib64
 #echo "%%{_libdir}/%%{name}" > %%{srccontribtree}/etc-ld.so.conf.d_%%{name}.conf
 
-# misspelled filename
-cp %{srccodetree}/LICENCE %{srccontribtree}/LICENSE
 %if %{sourceIsPrebuilt}
-  ####cp %%{srccodetree2}/LICENCE %%{srccontribtree}/LICENSE
+  # misspelled filename
+  cp %{srccodetree2}/LICENCE %{srccontribtree}/LICENSE
+
+# Source is NOT prebuilt...
+%else
+  # misspelled filename
+  cp %{srccodetree}/LICENCE %{srccontribtree}/LICENSE
+  rm -rf %{srccodetree}/debian
+  rm -rf %{srccodetree}/contrib/android
+
+  # Fix all Python shebangs recursively in .
+  # https://fedoraproject.org/wiki/Changes/Make_ambiguous_python_shebangs_error
+  # -p preserves timestamps
+  # -n prevents creating ~backup files
+  # -i specifies the interpreter for the shebang
+  # Need to list files that do not match ^[a-zA-Z0-9_]+\.py$ explicitly!
+  pathfix.py -pni "%{__python3} %{py3_shbang_opts}" . %{srccodetree}/electrum-dash %{srccodetree}/contrib/update-latest-version.py %{srccodetree}/contrib/sign-releases.py
 %endif
 
 # For debugging purposes...
@@ -257,23 +272,27 @@ cd %{srccontribtree}
 cd ..
 
 %if %{sourceIsPrebuilt}
-  # XXX going away soon
-  #cd %%{srccodetree2}
+  # XXX going away soon?
+  cd %{srccodetree2}
   # Doin' like this (sorta): https://docs.dash.org/en/latest/wallets/electrum/installation.html`
-  #/usr/bin/pip install . --user
+  /usr/bin/pip install . --user
 
 # Source is NOT prebuilt...
 %else
   cd %{srccodetree}
   #/usr/bin/pip3 install pip==18.1
-  /usr/bin/pip3 install .[fast] -t ./
+  #/usr/bin/pip3 install .[fast] -t ./
+  python3 -m pip install .[fast] -t ./
+
   # ImageMagick conversion of svg's to png's -- not needed for versions after 3.2.5?
   #for i in lock unlock confirmed status_lagging status_disconnected status_connected_proxy status_connected status_waiting preferences; do convert -background none icons/$i.svg icons/$i.png; done
   # compile icons for QT -- not needed for versions after 3.2.5?
   #mkdir -p gui/qt
   #/usr/bin/pyrcc5 icons.qrc -o gui/qt/icons_rc.py
   # protobuf-compiler
+
   /usr/bin/protoc --proto_path=electrum_dash --python_out=electrum_dash electrum_dash/paymentrequest.proto
+
   # python3-requests gettext -- translations (OPTIONAL)
   ./contrib/make_locale
 
@@ -371,6 +390,12 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 #cp -a %%{srccontribtree}/kivy* %%{buildroot}%%{_site_packages3}/
 #cp -a %%{srccontribtree}/trezor* %%{buildroot}%%{_site_packages3}/
 
+# Some files got ambiguous python shebangs, we fix them after everything else is done
+# I.e., addressing this mysterious build error: ". Change it to python3 (or python2) explicitly."
+#       right after a zillion "mangling shebang in ..." messages. I.e., somewhere, one gets missed.
+# https://fedoraproject.org/wiki/Changes/Make_ambiguous_python_shebangs_error
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{buildroot} %{buildroot}%{installtree}/%{name}
+
 
 %files
 # This section starts us in directory {_buildrootdir}
@@ -420,6 +445,7 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 %changelog
 * Wed Aug 18 2021 Todd Warner <t0dd_at_protonmail.com> 4.1.5.0-0.1.testing.taw
   - https://github.com/akhavr/electrum-dash/releases/tag/4.1.5.0
+  - had to deal with some mysterious shebang mangling errors
 
 * Tue Jun 29 2021 Todd Warner <t0dd_at_protonmail.com> 4.1.2.2-0.1.testing.taw
   - https://github.com/akhavr/electrum-dash/releases/tag/4.1.2.2
