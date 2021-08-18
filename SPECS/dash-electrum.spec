@@ -30,8 +30,8 @@ Summary: An easy-to-use Dash cryptocurrency light client for the desktop
 
 # VERSION
 %define vermajor 4.1
-%define verminor 2
-%define verminor2 2
+%define verminor 5
+%define verminor2 0
 %if %{versionIsFourComponents}
 Version: %{vermajor}.%{verminor}.%{verminor2}
 %else
@@ -310,10 +310,14 @@ cd ..
 # that /usr/lib is still used for certain things.
 %define _rawlib lib
 %define _usr_lib /usr/%{_rawlib}
-%define _unitdir %{_usr_lib}/systemd/system
-# These two are already defined in newer versions of RPM, but not in el7
-%if 0%{?rhel} && 0%{?rhel} < 8
+# These three are defined in some versions of RPM and not in others.
+%if ! 0%{?_unitdir:1}
+  %define _unitdir %{_usr_lib}/systemd/system
+%endif
+%if ! 0%{?_tmpfilesdir:1}
   %define _tmpfilesdir %{_usr_lib}/tmpfiles.d
+%endif
+%if ! 0%{?_metainfodir:1}
   %define _metainfodir %{_datadir}/metainfo
 %endif
 
@@ -414,6 +418,9 @@ cp -a %{srccontribtree}/x11_hash* %{buildroot}%{python3_sitearch}/
 
 
 %changelog
+* Wed Aug 18 2021 Todd Warner <t0dd_at_protonmail.com> 4.1.5.0-0.1.testing.taw
+  - https://github.com/akhavr/electrum-dash/releases/tag/4.1.5.0
+
 * Tue Jun 29 2021 Todd Warner <t0dd_at_protonmail.com> 4.1.2.2-0.1.testing.taw
   - https://github.com/akhavr/electrum-dash/releases/tag/4.1.2.2
 
